@@ -1,0 +1,5 @@
+.container {
+  display: flex;
+  justify-self: center;
+  padding: 4.5em 0;
+}

@@ -1,0 +1,20 @@
+.label,
+.input {
+  display: block;
+  color: var(--main-color);
+}
+.input {
+  width: clamp(330px, 31vw + 13.31rem, 580px);
+  outline: none;
+  border: none;
+  border-bottom: 1px solid var(--main-color);
+  box-sizing: border-box;
+  padding: 1em 1.5em;
+}
+.input::placeholder {
+  visibility: hidden;
+  color: var(--main-color);
+}
+.container + .container {
+  margin-top: 2em;
+}
