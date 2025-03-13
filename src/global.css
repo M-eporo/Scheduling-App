@@ -5,7 +5,6 @@
   --white: #fff;
   /* typography */
 }
-
 body, h1, h2, h3, h4, h5, h6, p, ul, li, figure, img  {
   margin: 0;
   padding: 0;
@@ -14,5 +13,16 @@ body, h1, h2, h3, h4, h5, h6, p, ul, li, figure, img  {
 body {
   position: relative;
   color: var(--p-text);
+  letter-spacing: 0.1em;
+}
+button {
+  letter-spacing: 0.1em;
+}
 
+/* Calendar */
+.holiday {
+  color: red !important;
+}
+.saturday {
+  color: green !important;
 }

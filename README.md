@@ -48,3 +48,8 @@ export default tseslint.config({
   },
 })
 ```
+
+## 祝日データについて
+本アプリは、日本の祝日データを [holidays-jp API](https://holidays-jp.github.io/) から取得しています。
+
+このAPIは MIT ライセンスのもとで提供されています。

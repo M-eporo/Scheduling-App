@@ -1,10 +1,24 @@
+button {
+  letter-spacing: 0.15em;
+}
+
 .loginBtn {
   display: block;
   width: 330px;
-  margin: 4em auto 0;
+  margin: 2em auto 0;
   padding: 1em 0;
   border: none;
   border-radius: 16px;
   background-color: var(--main-color);
   color: var(--white);
+}
+.cancelBtn {
+  composes: loginBtn;
+  border: 1px solid var(--main-color);
+  background-color: #fff;
+  color: var(--main-color);
+  margin: 1em auto 0;
+}
+.logout {
+  
 }

@@ -1,5 +1,5 @@
 import "./App.css";
-import MyFullCalendar from "./component/FullCalendar";
+import MyFullCalendar from "./component/MyFullCalendar";
 // import ReactCalendar from "./component/ReactCalendar";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { auth } from "./firebase";
@@ -12,7 +12,7 @@ import { ErrorFallback } from "./utils/ErrorFallback";
 const App = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user);
-  
+  console.log(user);
   useEffect(() => {
     auth.onAuthStateChanged((loginUser) => {
       if (loginUser) {
@@ -30,13 +30,15 @@ const App = () => {
 
   return (
     <>
+      
       <ErrorBoundary FallbackComponent={ErrorFallback}>
+      
       {user
-        ?
-        <MyFullCalendar />
+        ? 
+        <MyFullCalendar />   
         :
-        <Login />
-        }
+        <Login />  
+      }
       </ErrorBoundary>
     </>
   );

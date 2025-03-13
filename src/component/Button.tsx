@@ -4,17 +4,27 @@ type ButtonProps = {
   disabled: boolean;
   value: string;
   styleName: string;
+  onClick?: (value: React.SetStateAction<boolean>) => void;
+  signOut?: () => Promise<void>;
 };
-const Button = ({type, disabled, value, styleName}: ButtonProps) => {
+const Button = ({ type, disabled, value, styleName, onClick, signOut }: ButtonProps) => {
   return (
     <button
-      className={ styles[styleName] }
+      className={styles[styleName]}
       type={type}
       disabled={disabled}
+      onClick={async () => {
+        if (onClick) {
+          onClick((prevState: boolean) => !prevState)
+        }
+        if (signOut) {
+          await signOut();
+        }
+      }}
     >
       {value}
     </button>
   );
 };
-
+ 
 export default Button;
