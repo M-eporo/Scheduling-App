@@ -4,5 +4,6 @@ export interface InitialUserState {
     photo: string;
     email: string;
     displayName: string;
+    emailVerified: boolean;
   }
 }

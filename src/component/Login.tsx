@@ -106,11 +106,11 @@ const Login = () => {
         </div>
         <div className={styles.container}>
           <div className={styles.innerContainer}>
-            <p onClick={passwordChange}>パスワードをお忘れですか？</p>
-            <p onClick={() => setIsShow(prevState => !prevState)}>新規アカウント登録</p>
+            <p className={styles.button} onClick={passwordChange}>パスワードをお忘れですか？</p>
+            <p className={styles.button} onClick={() => setIsShow(prevState => !prevState)}>新規アカウント登録</p>
             <div className={styles.flexContainer}>
               <GoogleIcon />
-              <p onClick={googleLogin}>Googleでログイン</p>
+              <p className={styles.button} onClick={googleLogin}>Googleでログイン</p>
             </div>
           </div>
         </div>

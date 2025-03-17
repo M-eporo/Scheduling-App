@@ -16,11 +16,13 @@ const App = () => {
   useEffect(() => {
     auth.onAuthStateChanged((loginUser) => {
       if (loginUser) {
+        console.log(loginUser);
         dispatch(login({
           uid: loginUser.uid,
           photo: loginUser.photoURL,
           email: loginUser.email,
-          displayName: loginUser.displayName
+          displayName: loginUser.displayName,
+          emailVerified: loginUser.emailVerified,
         }));
       } else {
         dispatch(logout());

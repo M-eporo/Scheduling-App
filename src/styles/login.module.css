@@ -23,3 +23,6 @@
   composes: flex-center from "./utils.module.css";
   align-items: center;
 }
+.button {
+  cursor: pointer;
+}
