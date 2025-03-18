@@ -8,49 +8,23 @@ import { fetchHolidays } from "../utils/getHolidays";
 import { useEffect, useState } from "react";
 import Button from "./Button";
 import { auth } from "../firebase";
-
-type HolidayType = {
-  title: string;
-  date: string;
-  start?: Date;
-  end?: Date;
-  startStr?: string;
-  endStr?: string;
-  allDay?: boolean;
-}[];
-type ClickEventType = {
-  title: string;
-  date: string;
-  start?: Date;
-  end?: Date;
-  startStr?: string;
-  endStr?: string;
-  allDay?: boolean;
-}[];
-type SelectEventType = {
-  title: string;
-  date: string;
-  start: Date;
-  end: Date;
-  startStr: string;
-  endStr: string;
-  allDay: boolean;
-}[];
-type AllEventsType = {
-  title: string;
-  date: string;
-  start?: Date;
-  end?: Date;
-  startStr?: string;
-  endStr?: string;
-  allDay?: boolean;
-}[];
+import EmailVerifying from "./EmailVerifying";
+import type {
+  HolidayType,
+  ClickEventType,
+  SelectEventType,
+  AllEventsType
+} from "../types";
+import { useAppSelector } from "../app/hooks";
 
 const MyFullCalendar = () => {
   const [allEvents, setAllEvents] = useState<AllEventsType>([]);
   const [holidayEvents, setHolidayEvents] = useState<HolidayType>([]);
   const [clickEvents, setClickEvents] = useState<ClickEventType>([]);
   const [selectEvents, setSelectEvents] = useState<SelectEventType>([]);
+
+  const user = useAppSelector((state) => state.user.user);
+  const emailUser = useAppSelector((state) => state.emailUser.emailUser);
   useEffect(() => {
     const getHolidays = async () => {
       const holidays = await fetchHolidays();
@@ -80,6 +54,7 @@ const MyFullCalendar = () => {
     if (day === 6) classNames.push("saturday");
     return classNames;
   };
+
   const handleClick = (info: DateClickArg) => {
     console.log(info);
     const title = prompt("イベントタイトルを入力してください");
@@ -111,51 +86,57 @@ const MyFullCalendar = () => {
       ]);
     }
   }; 
-  
+
   return (
-    <div style={{position: "relative"}}>
-      <FullCalendar
-        locale="jaLocale"
-        headerToolbar={{
-          left: "prevYear, prev, today, next, nextYear",
-          center: "title",
-          right: "timeGridDay, timeGridWeek, dayGridMonth, multiMonthYear",
-        }}
-        buttonText={{
-          today: "今日",
-          day: "日",
-          week: "週",
-          month: "月",
-          year: "年"
-        }}
-        plugins={[
-          timeGridPlugin,
-          dayGridPlugin,
-          listPlugin,
-          multiMonthPlugin,
-          interactionPlugin,
-        ]}
-        initialView="dayGridMonth"
-        selectable={true}
-        unselectAuto={true}
-        dayCellClassNames={(info) => getDayClassName(info.date)}
-        events={allEvents}
-        dateClick={handleClick}
-        select={handleSelect}
-      />
-      <Button
-        styleName="logout"
-        type="button"
-        disabled={false}
-        signOut={async () => {
-          const isConfirmed = confirm("ログアウトしますか?");
-          if (isConfirmed) {
-            await auth.signOut();
-          }
-        }}
-        value="ログアウト"
-      />
-    </div>
+    <>
+      {user?.emailVerified || emailUser?.emailVerified ? (
+        <div style={{ position: "relative" }}>
+          <FullCalendar
+            locale="jaLocale"
+            headerToolbar={{
+              left: "prevYear, prev, today, next, nextYear",
+              center: "title",
+              right: "timeGridDay, timeGridWeek, dayGridMonth, multiMonthYear",
+            }}
+            buttonText={{
+              today: "今日",
+              day: "日",
+              week: "週",
+              month: "月",
+              year: "年"
+            }}
+            plugins={[
+              timeGridPlugin,
+              dayGridPlugin,
+              listPlugin,
+              multiMonthPlugin,
+              interactionPlugin,
+            ]}
+            initialView="dayGridMonth"
+            selectable={true}
+            unselectAuto={true}
+            dayCellClassNames={(info) => getDayClassName(info.date)}
+            events={allEvents}
+            dateClick={handleClick}
+            select={handleSelect}
+          />
+          <Button
+            styleName="logout"
+            type="button"
+            disabled={false}
+            signOut={async () => {
+              const isConfirmed = confirm("ログアウトしますか?");
+              if (isConfirmed) {
+                await auth.signOut();
+              }
+            }}
+            value="ログアウト"
+          />
+        </div>
+      ) : (
+        <EmailVerifying />
+      )}
+    </>
   );
 };
 

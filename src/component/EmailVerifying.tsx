@@ -1,13 +1,10 @@
-import React, { useEffect } from 'react';
-import { useAppSelector } from '../app/hooks';
+import styles from "../styles/emailVerifying.module.css";
 
 const EmailVerifying = () => {
-  const user = useAppSelector((state) => state.user.user);
-  useEffect(() => {
-    
-  })
   return (
-    <div>Please EmailVerifying</div>
+    <div className={styles.cover}>
+      <p>登録したメールアドレスにメールアドレス確認用のメールを送信しました。メールを確認してください。</p>
+    </div>
   )
 }
 

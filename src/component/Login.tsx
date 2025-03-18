@@ -16,7 +16,6 @@ const Login = () => {
   });
   const [isShow, setIsShow] = useState(false);
 
-  //const user = useAppSelector((state => state.user.user));
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({...form, [e.target.name]: e.target.value});
   };
@@ -27,6 +26,7 @@ const Login = () => {
         uid: user.user.uid,
         name: user.user.displayName,
         photoURL: user.user.photoURL,
+        email: user.user.email,
         createdAt: new Date().toISOString()
       }, { merge: true});
     } catch (err) {
@@ -38,7 +38,6 @@ const Login = () => {
     e.preventDefault();
     try {
       const result = await signInWithEmailAndPassword(auth, form.email, form.password);
-      console.log(result);
       if (!result.user.emailVerified) {
         alert("メールアドレスが未確認です。")
         auth.signOut();
@@ -64,7 +63,7 @@ const Login = () => {
     }
   };
 
-  //パスワード再設定
+  //パスワード再設定 ==============================要チェック
   const passwordChange = async () => {
     if (!form.email) {
       alert("メールアドレスを入力してください。");

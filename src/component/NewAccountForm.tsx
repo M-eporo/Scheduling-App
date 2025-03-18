@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "../styles/newAccountForm.module.css";
 import Input from "./Input";
 import Button from "./Button";
 import { createUserWithEmailAndPassword, sendEmailVerification, UserCredential } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
-import EmailVerifying from "./EmailVerifying";
-import { useAppSelector } from "../app/hooks";
 
 type FormType = {
   name: string;
@@ -19,15 +17,13 @@ type Props = {
 };
 
 const NewAccountForm = ({ setIsShow }: Props) => {
-  const user = useAppSelector((state) => state.user.user);
-  
   const [form, setForm] = useState<FormType>({
     name: "",
     displayName: "",
     email: "",
     password: "",
   });
-  const [showVerified, setShowVerified] = useState<boolean>(false);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -39,9 +35,10 @@ const NewAccountForm = ({ setIsShow }: Props) => {
         uid: user.user.uid,
         name: form.name,
         displayName: form.displayName,
+        email: form.email,
+        emailVerified: user.user.emailVerified,
         createdAt: new Date().toISOString(),
       }, { merge: true });
-      console.log("アカウント登録しました");
     } catch (err) {
       console.log(err);
     }
@@ -50,36 +47,20 @@ const NewAccountForm = ({ setIsShow }: Props) => {
   const createAccount = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      
       const result = await createUserWithEmailAndPassword(auth, form.email, form.password);
-      setShowVerified(true);
       console.log(result);
       if (result.user) {
         await sendEmailVerification(result.user);
-        if (result.user.emailVerified) {
-          await saveUserToFireStore(result);
-        } else {
-          alert("メールアドレスが未確認です。")
-        }
-        
+        saveUserToFireStore(result);
+        alert("メールアドレス認証用のメールを送信しました。");
       }
-      alert("新規カウント作成しました。メールを確認してください。");
     } catch (err) {
       console.log(err);
       alert("アカウント作成に失敗しました。");
     }
   };
-
-  useEffect(() => {
-    if (user?.emailVerified) {
-      setShowVerified(true);
-    }
-  },[user]);
   return (
     <div className={styles.container}>
-      {showVerified ? (
-        <EmailVerifying/>
-      ) : (
         <>
           <h4 className={styles.heading}>新規アカウント登録</h4>
           <form onSubmit={createAccount} className={styles.form}>
@@ -132,7 +113,6 @@ const NewAccountForm = ({ setIsShow }: Props) => {
             />
           </form>
         </>
-    )}
     </div>
   )
 }
