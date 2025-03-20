@@ -4,6 +4,7 @@ import listPlugin from '@fullcalendar/list';
 import multiMonthPlugin from '@fullcalendar/multimonth'
 import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import { DateSelectArg, EventClickArg, EventHoveringArg } from "@fullcalendar/core";
 import { fetchHolidays } from "../utils/getHolidays";
 import { useEffect, useState } from "react";
 import Button from "./Button";
@@ -16,6 +17,7 @@ import type {
   AllEventsType
 } from "../types";
 import { useAppSelector } from "../app/hooks";
+import { addSchedules } from "../utils/addSchedule";
 
 const MyFullCalendar = () => {
   const [allEvents, setAllEvents] = useState<AllEventsType>([]);
@@ -25,6 +27,7 @@ const MyFullCalendar = () => {
 
   const user = useAppSelector((state) => state.user.user);
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
+
   useEffect(() => {
     const getHolidays = async () => {
       const holidays = await fetchHolidays();
@@ -48,7 +51,7 @@ const MyFullCalendar = () => {
       month: "2-digit",
       day: "2-digit"
     }).replace(/\//g, "-");
-    const isHoliday = holidayEvents.some(holiday => holiday.date === formattedDate);
+    const isHoliday = holidayEvents.some(holiday => holiday.dates === formattedDate);
     const classNames: string[] = [];
     if (day === 0 || isHoliday) classNames.push("holiday");
     if (day === 6) classNames.push("saturday");
@@ -56,6 +59,7 @@ const MyFullCalendar = () => {
   };
 
   const handleClick = (info: DateClickArg) => {
+    info.jsEvent.preventDefault();
     console.log(info);
     const title = prompt("イベントタイトルを入力してください");
     if (title) {
@@ -63,20 +67,30 @@ const MyFullCalendar = () => {
         ...clickEvents,
         {
           title: title,
-          date: info.dateStr,
+          date: info.date,
+          dateStr: info.dateStr,
+          allDay: info.allDay
         }
       ]);
+      addSchedules({
+        title,
+        dayInfo: {
+          date: info.date,
+          dateStr: info.dateStr,
+          allDay: info.allDay
+        }
+      });
     }
   };
 
-  const handleSelect = (info) => {
-    const title = prompt("イベントタイトルを入力してください");
+  const handleSelect = (info: DateSelectArg) => {
+    const title = prompt("イベントタイトルを入力してください(セレクト)");
+    console.log(info);
     if (title) {
       setSelectEvents([
         ...selectEvents,
         {
           title: title,
-          date: info.startStr,
           start: info.start,
           end: info.end,
           startStr: info.startStr,
@@ -84,9 +98,29 @@ const MyFullCalendar = () => {
           allDay: info.allDay,
         }
       ]);
+      addSchedules({
+        title,
+        daysInfo: {
+          start: info.start,
+          end: info.end,
+          startStr: info.startStr,
+          endStr: info.endStr,
+          allDay: info.allDay,
+        }
+      });
     }
   }; 
 
+  const handleEventClick = (info: EventClickArg) => {
+    console.log(info);
+  };
+  const handleMouseEnter = (info: EventHoveringArg) => {
+    console.log(info);
+  };
+  const handleMouseLeave = (info: EventHoveringArg) => {
+    console.log(info);
+  };
+  
   return (
     <>
       {user?.emailVerified || emailUser?.emailVerified ? (
@@ -115,10 +149,14 @@ const MyFullCalendar = () => {
             initialView="dayGridMonth"
             selectable={true}
             unselectAuto={true}
+            selectMinDistance={1}
             dayCellClassNames={(info) => getDayClassName(info.date)}
             events={allEvents}
             dateClick={handleClick}
             select={handleSelect}
+            eventClick={handleEventClick}
+            eventMouseEnter={handleMouseEnter}
+            eventMouseLeave={handleMouseLeave}
           />
           <Button
             styleName="logout"

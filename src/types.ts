@@ -20,7 +20,7 @@ export interface InitialEmailUserState {
 
 export type HolidayType = {
   title: string;
-  date: string;
+  dates: string;
   start?: Date;
   end?: Date;
   startStr?: string;
@@ -30,17 +30,17 @@ export type HolidayType = {
 
 export type ClickEventType = {
   title: string;
-  date: string;
+  date: Date;
+  dateStr: string;
+  allDay: boolean;
   start?: Date;
   end?: Date;
   startStr?: string;
   endStr?: string;
-  allDay?: boolean;
 }[];
 
 export type SelectEventType = {
   title: string;
-  date: string;
   start: Date;
   end: Date;
   startStr: string;
@@ -50,7 +50,8 @@ export type SelectEventType = {
 
 export type AllEventsType = {
   title: string;
-  date: string;
+  dates?: string;
+  date?: Date
   start?: Date;
   end?: Date;
   startStr?: string;

@@ -1,6 +1,11 @@
 button {
   letter-spacing: 0.15em;
   cursor: pointer;
+  transition: all 0.6s;
+  &:hover {
+    filter: brightness(1.10) drop-shadow(0 0 5px #777);
+    color: #ccc;
+  }
 }
 
 .loginBtn {
@@ -21,5 +26,5 @@ button {
   margin: 1em auto 0;
 }
 .logout {
-  
+  composes: loginBtn;
 }
