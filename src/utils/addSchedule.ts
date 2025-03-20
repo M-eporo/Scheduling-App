@@ -18,12 +18,12 @@ type ArgsType = {
   }
 }
 
-export const addSchedules = async ({title, dayInfo, daysInfo}: ArgsType) => {
+export const addSchedules = async ({title, createdAt, dayInfo, daysInfo}: ArgsType) => {
   if (auth.currentUser) {
     const schedulesRef = collection(db, "user", auth.currentUser.uid, "schedules");
     const data: ArgsType = {
       title,
-      createdAt: new Date()
+      createdAt,
     };
     if (dayInfo) {
       data.dayInfo = dayInfo

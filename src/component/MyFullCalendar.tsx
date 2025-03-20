@@ -74,6 +74,7 @@ const MyFullCalendar = () => {
       ]);
       addSchedules({
         title,
+        createdAt: new Date(),
         dayInfo: {
           date: info.date,
           dateStr: info.dateStr,
@@ -100,6 +101,7 @@ const MyFullCalendar = () => {
       ]);
       addSchedules({
         title,
+        createdAt: new Date(),
         daysInfo: {
           start: info.start,
           end: info.end,
