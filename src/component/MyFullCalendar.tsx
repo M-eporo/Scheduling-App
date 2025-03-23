@@ -11,38 +11,78 @@ import Button from "./Button";
 import { auth } from "../firebase";
 import EmailVerifying from "./EmailVerifying";
 import type {
-  HolidayType,
-  ClickEventType,
-  SelectEventType,
-  AllEventsType
+  AllEventType,
+  EventType,
+  InitialEventType
 } from "../types";
-import { useAppSelector } from "../app/hooks";
-import { addSchedules } from "../utils/addSchedule";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { useAddSchedules } from "../utils/useAddSchedule";
+import { getUserSchedules } from "../utils/getUserSchedules";
+import { setSchedulesReducer } from "../features/scheduleSlice";
+import Modal from "./Modal";
+import { EventImpl } from "@fullcalendar/core/internal";
 
 const MyFullCalendar = () => {
-  const [allEvents, setAllEvents] = useState<AllEventsType>([]);
-  const [holidayEvents, setHolidayEvents] = useState<HolidayType>([]);
-  const [clickEvents, setClickEvents] = useState<ClickEventType>([]);
-  const [selectEvents, setSelectEvents] = useState<SelectEventType>([]);
+  const [allEvents, setAllEvents] = useState<AllEventType>([]);
+  const [holidayEvents, setHolidayEvents] = useState<InitialEventType>([]);
+  const [storedSchedules, setStoredSchedules] = useState<InitialEventType>([]);
+  const [clickEvents, setClickEvents] = useState<EventType>([]);
+  const [selectEvents, setSelectEvents] = useState<EventType>([]);
+  const [initialEvents, setInitialEvents] = useState<InitialEventType>([]);
 
+  //Modalの表示
+  const [isShowModal, setIsShowModal] = useState<boolean>(false);
+  const [modalData, setModalData] = useState<EventImpl>();
   const user = useAppSelector((state) => state.user.user);
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
-
+  const addSchedule = useAddSchedules();
+  const dispatch = useAppDispatch();
+  //初回レンダリング時
   useEffect(() => {
+    //祝日のデータを取得
     const getHolidays = async () => {
       const holidays = await fetchHolidays();
       setHolidayEvents(holidays);
-    };
+    }
     getHolidays();
   }, []);
 
+  //Firestoreに保存されているスケジュールデータを取得
+  useEffect(() => {
+    if (auth.currentUser) {
+      const getStoredSchedules = async () => {
+        const storedSchedules = await getUserSchedules();
+        if (storedSchedules) {
+          setStoredSchedules(storedSchedules);
+        }
+      };
+      getStoredSchedules();
+    }
+  }, [auth.currentUser]);
+
+  //初期イベント情報の設定
+  //祝日とFirestoreに保存されてデータ
+  //InitialEventsの設定に使用
+  useEffect(() => {
+    setInitialEvents([
+      ...holidayEvents,
+      ...storedSchedules
+    ]);
+  }, [holidayEvents, storedSchedules]);
+
+  //全てのイベントをセット
   useEffect(() => {
     setAllEvents([
-      ...holidayEvents,
+      ...initialEvents,
       ...clickEvents,
       ...selectEvents
     ]);
-  }, [holidayEvents, clickEvents, selectEvents]);
+  }, [initialEvents, clickEvents, selectEvents]);
+
+  //全てのイベントが取得出来たら、Reduxを更新
+  useEffect(() => {
+    dispatch(setSchedulesReducer(allEvents))
+  }, [allEvents, dispatch]);
 
   const getDayClassName = (date: Date) => {
     const day: number = date.getDay();
@@ -51,12 +91,13 @@ const MyFullCalendar = () => {
       month: "2-digit",
       day: "2-digit"
     }).replace(/\//g, "-");
-    const isHoliday = holidayEvents.some(holiday => holiday.dates === formattedDate);
+    const isHoliday = holidayEvents.some(holiday => holiday.date === formattedDate);
     const classNames: string[] = [];
     if (day === 0 || isHoliday) classNames.push("holiday");
     if (day === 6) classNames.push("saturday");
     return classNames;
   };
+
 
   const handleClick = (info: DateClickArg) => {
     info.jsEvent.preventDefault();
@@ -66,20 +107,21 @@ const MyFullCalendar = () => {
       setClickEvents([
         ...clickEvents,
         {
-          title: title,
-          date: info.date,
+          title,
+          allDay: info.allDay,
+          createdAt: new Date().toISOString(),
+          date: info.date.toISOString(),
           dateStr: info.dateStr,
-          allDay: info.allDay
         }
       ]);
-      addSchedules({
+
+      //Firestoreに新規イベントを保存(一日)
+      addSchedule({
         title,
-        createdAt: new Date(),
-        dayInfo: {
-          date: info.date,
-          dateStr: info.dateStr,
-          allDay: info.allDay
-        }
+        allDay: info.allDay,
+        createdAt: new Date().toISOString(),
+        date: info.date.toISOString(),
+        dateStr: info.dateStr,
       });
     }
   };
@@ -91,31 +133,45 @@ const MyFullCalendar = () => {
       setSelectEvents([
         ...selectEvents,
         {
-          title: title,
-          start: info.start,
-          end: info.end,
+          title,
+          allDay: info.allDay,
+          createdAt: new Date().toISOString(),
+          start: info.start.toISOString(),
+          end: info.end.toISOString(),
           startStr: info.startStr,
           endStr: info.endStr,
-          allDay: info.allDay,
         }
       ]);
-      addSchedules({
+
+      //Firestoreに新規イベントを保存(複数日)
+      addSchedule({
         title,
-        createdAt: new Date(),
-        daysInfo: {
-          start: info.start,
-          end: info.end,
-          startStr: info.startStr,
-          endStr: info.endStr,
-          allDay: info.allDay,
-        }
+        allDay: info.allDay,
+        createdAt: new Date().toISOString(),
+        start: info.start.toISOString(),
+        end: info.end.toISOString(),
+        startStr: info.startStr,
+        endStr: info.endStr,
       });
     }
   }; 
 
   const handleEventClick = (info: EventClickArg) => {
-    console.log(info);
+    setIsShowModal((prevState) => !prevState);
+    console.log(info.event);
+    setModalData(info.event);
+    
+    console.log(info.event.title)
+    console.log(info.event.allDay)
+    console.log(info.event._def.extendedProps.createdAt);
+    console.log(info.event._def.extendedProps.dateStr);
+    console.log(info.event.end);
+    console.log(info.event.endStr);
+    console.log(info.event.start);
+    console.log(info.event.startStr);
+
   };
+
   const handleMouseEnter = (info: EventHoveringArg) => {
     console.log(info);
   };
@@ -172,6 +228,8 @@ const MyFullCalendar = () => {
             }}
             value="ログアウト"
           />
+          {isShowModal && modalData && <Modal event={modalData} />}
+          
         </div>
       ) : (
         <EmailVerifying />

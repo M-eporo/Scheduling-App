@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { getUserInfo } from "../features/emailUserSlice";
 import { useEffect } from "react";
 
-const GetUserInfo = () => {
+export const useGetUserInfo = () => {
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
   const dispatch = useAppDispatch();
 
@@ -31,10 +31,4 @@ const GetUserInfo = () => {
     };
     getdocument();
   },[dispatch, emailUser]);
-  
-  return (
-    <p>asdf</p>
-  );
 };
-
-export default GetUserInfo;

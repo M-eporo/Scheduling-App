@@ -5,7 +5,7 @@ export async function fetchHolidays() {
     return Object.entries(holidays).map(([date, holiday]) => {
       const arr = {
         title: holiday as string,
-        dates: date,
+        date: date,
         // color: "#ff0000",
       };
       return arr;

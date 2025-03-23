@@ -6,7 +6,7 @@ export interface InitialUserState {
     displayName: string;
     emailVerified: boolean;
   }
-}
+};
 
 export interface InitialEmailUserState {
   emailUser: null | {
@@ -15,46 +15,74 @@ export interface InitialEmailUserState {
     displayName: string;
     email: string;
     emailVerified: boolean;
-  } 
-}
+  }
+};
 
+export type InitialSchedulesStateType = {
+  schedules: ScheduleType[];
+};
+
+export type ScheduleType = {
+  title: string;
+  allDay: boolean;
+  createdAt: string;
+  date?: string;
+  dateStr?: string;
+  start?: string;
+  end?: string;
+  startStr?: string;
+  endStr?: string;
+};
+
+
+export type InitialEventType = {
+  title: string;
+  date?: string;
+  allDay?: boolean;
+  createdAt?: string;
+  dateStr?: string;
+  start?: string;
+  end?: string;
+  startStr?: string;
+  endStr?: string;
+}[];
 export type HolidayType = {
   title: string;
-  dates: string;
-  start?: Date;
-  end?: Date;
-  startStr?: string;
-  endStr?: string;
+  date: string;
+}[];
+
+export type EventType = {
+  title: string;
   allDay?: boolean;
-}[];
-
-export type ClickEventType = {
-  title: string;
-  date: Date;
-  dateStr: string;
-  allDay: boolean;
-  start?: Date;
-  end?: Date;
+  createdAt?: string;
+  date?: string;
+  dateStr?: string;
+  start?: string;
+  end?: string;
   startStr?: string;
   endStr?: string;
 }[];
 
-export type SelectEventType = {
+export type EventObjType = {
   title: string;
-  start: Date;
-  end: Date;
-  startStr: string;
-  endStr: string;
-  allDay: boolean;
-}[];
-
-export type AllEventsType = {
-  title: string;
-  dates?: string;
-  date?: Date
-  start?: Date;
-  end?: Date;
-  startStr?: string;
-  endStr?: string;
   allDay?: boolean;
+  createdAt: string;
+  date?: string;
+  dateStr?: string;
+  start?: string;
+  end?: string;
+  startStr?: string;
+  endStr?: string;
+};
+
+export type AllEventType = {
+  title: string;
+  date?: string;
+  allDay?: boolean;
+  createdAt?: string;
+  dateStr?: string;
+  start?: string;
+  end?: string;
+  startStr?: string;
+  endStr?: string;
 }[];

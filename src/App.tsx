@@ -8,13 +8,15 @@ import Login from "./component/Login";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "./utils/ErrorFallback";
 import { emailLogin, emailLogout } from "./features/emailUserSlice";
-import GetUserInfo from "./utils/GetUserInfo";
+import { useGetUserInfo } from "./utils/useGetUserInfo";
 import { doc, setDoc } from "firebase/firestore";
 
 const App = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.user);
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
+  //要確認
+  useGetUserInfo();
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (loginUser) => {
       if (loginUser) {
@@ -35,9 +37,8 @@ const App = () => {
             emailVerified: loginUser?.emailVerified
           }));
         }
-       
         const userRef = doc(db, "user", loginUser.uid);
-        await setDoc(userRef, {emailVerified: loginUser?.emailVerified}, { merge: true})
+        await setDoc(userRef, { emailVerified: loginUser?.emailVerified }, { merge: true });
       } else {
         dispatch(logout());
         dispatch(emailLogout());
@@ -53,7 +54,7 @@ const App = () => {
         ? 
           <>
             <MyFullCalendar />   
-            <GetUserInfo />
+            
           </>
         :
           <Login />  
