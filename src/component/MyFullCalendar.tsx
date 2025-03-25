@@ -5,22 +5,29 @@ import multiMonthPlugin from '@fullcalendar/multimonth'
 import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { DateSelectArg, EventClickArg, EventHoveringArg } from "@fullcalendar/core";
-import { fetchHolidays } from "../utils/getHolidays";
+import { EventImpl } from "@fullcalendar/core/internal";
+
 import { useEffect, useState } from "react";
-import Button from "./Button";
+
 import { auth } from "../firebase";
+
+import { v4 as uuidv4 } from "uuid";
+
+import Button from "./Button";
 import EmailVerifying from "./EmailVerifying";
+import Modal from "./Modal";
+
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { fetchHolidays } from "../utils/getHolidays";
+import { useAddSchedules } from "../utils/useAddSchedule";
+import { getUserSchedules } from "../utils/getUserSchedules";
+import { setSchedulesReducer } from "../features/scheduleSlice";
+
 import type {
   AllEventType,
   EventType,
   InitialEventType
 } from "../types";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { useAddSchedules } from "../utils/useAddSchedule";
-import { getUserSchedules } from "../utils/getUserSchedules";
-import { setSchedulesReducer } from "../features/scheduleSlice";
-import Modal from "./Modal";
-import { EventImpl } from "@fullcalendar/core/internal";
 
 const MyFullCalendar = () => {
   const [allEvents, setAllEvents] = useState<AllEventType>([]);
@@ -33,6 +40,9 @@ const MyFullCalendar = () => {
   //Modalの表示
   const [isShowModal, setIsShowModal] = useState<boolean>(false);
   const [modalData, setModalData] = useState<EventImpl>();
+  const [top, setTop] = useState(0);
+  const [left, setLeft] = useState(0);
+
   const user = useAppSelector((state) => state.user.user);
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
   const addSchedule = useAddSchedules();
@@ -104,9 +114,11 @@ const MyFullCalendar = () => {
     console.log(info);
     const title = prompt("イベントタイトルを入力してください");
     if (title) {
+      const id = uuidv4();
       setClickEvents([
         ...clickEvents,
         {
+          id,
           title,
           allDay: info.allDay,
           createdAt: new Date().toISOString(),
@@ -117,6 +129,7 @@ const MyFullCalendar = () => {
 
       //Firestoreに新規イベントを保存(一日)
       addSchedule({
+        id,
         title,
         allDay: info.allDay,
         createdAt: new Date().toISOString(),
@@ -129,10 +142,13 @@ const MyFullCalendar = () => {
   const handleSelect = (info: DateSelectArg) => {
     const title = prompt("イベントタイトルを入力してください(セレクト)");
     console.log(info);
+    
     if (title) {
+      const id = uuidv4();
       setSelectEvents([
         ...selectEvents,
         {
+          id,
           title,
           allDay: info.allDay,
           createdAt: new Date().toISOString(),
@@ -145,6 +161,7 @@ const MyFullCalendar = () => {
 
       //Firestoreに新規イベントを保存(複数日)
       addSchedule({
+        id,
         title,
         allDay: info.allDay,
         createdAt: new Date().toISOString(),
@@ -157,26 +174,23 @@ const MyFullCalendar = () => {
   }; 
 
   const handleEventClick = (info: EventClickArg) => {
+    const rect = info.el.getBoundingClientRect()
     setIsShowModal((prevState) => !prevState);
-    console.log(info.event);
-    setModalData(info.event);
     
-    console.log(info.event.title)
-    console.log(info.event.allDay)
-    console.log(info.event._def.extendedProps.createdAt);
-    console.log(info.event._def.extendedProps.dateStr);
-    console.log(info.event.end);
-    console.log(info.event.endStr);
-    console.log(info.event.start);
-    console.log(info.event.startStr);
-
+    if (rect.left > window.innerWidth / 2) {
+      setLeft(rect.left - info.el.clientWidth);
+    } else if (rect.left < window.innerWidth / 2) {
+      setLeft(rect.left + info.el.offsetWidth);
+    }
+    
+    setTop(rect.top);
+    setModalData(info.event);
   };
-
   const handleMouseEnter = (info: EventHoveringArg) => {
-    console.log(info);
+    
   };
   const handleMouseLeave = (info: EventHoveringArg) => {
-    console.log(info);
+    
   };
   
   return (
@@ -208,6 +222,7 @@ const MyFullCalendar = () => {
             selectable={true}
             unselectAuto={true}
             selectMinDistance={1}
+            dayMaxEventRows={3}
             dayCellClassNames={(info) => getDayClassName(info.date)}
             events={allEvents}
             dateClick={handleClick}
@@ -228,8 +243,15 @@ const MyFullCalendar = () => {
             }}
             value="ログアウト"
           />
-          {isShowModal && modalData && <Modal event={modalData} />}
-          
+          {isShowModal && modalData &&
+            <Modal
+              style={{
+                top: top,
+                left: left,
+              }}
+              event={modalData}
+            />
+          }
         </div>
       ) : (
         <EmailVerifying />

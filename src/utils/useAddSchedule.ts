@@ -8,13 +8,14 @@ export const useAddSchedules = () => {
   const dispatch = useAppDispatch();
 
   const addSchedule = async ({
-    title, allDay = true, createdAt,
+    id, title, allDay = true, createdAt,
     date = "", dateStr = "", 
     start = "", end = "", startStr = "", endStr = ""
   }: EventObjType) => {
     if (auth.currentUser) {
       const schedulesRef = collection(db, "user", auth.currentUser.uid, "schedules");
       const data: EventObjType = {
+        id,
         title,
         allDay,
         createdAt

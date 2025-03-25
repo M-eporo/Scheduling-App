@@ -18,6 +18,7 @@ export const getUserSchedules = async () => {
       return timestamp;
     };
     return {
+      id: data.id,
       title: data.title,
       allDay: data.allDay,
       createdAt: convertTimestamp(data.createdAt),

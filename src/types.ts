@@ -7,7 +7,6 @@ export interface InitialUserState {
     emailVerified: boolean;
   }
 };
-
 export interface InitialEmailUserState {
   emailUser: null | {
     uid: string;
@@ -17,12 +16,12 @@ export interface InitialEmailUserState {
     emailVerified: boolean;
   }
 };
-
 export type InitialSchedulesStateType = {
   schedules: ScheduleType[];
 };
 
 export type ScheduleType = {
+  id?: string;
   title: string;
   allDay: boolean;
   createdAt: string;
@@ -34,8 +33,8 @@ export type ScheduleType = {
   endStr?: string;
 };
 
-
 export type InitialEventType = {
+  id?: string;
   title: string;
   date?: string;
   allDay?: boolean;
@@ -47,11 +46,13 @@ export type InitialEventType = {
   endStr?: string;
 }[];
 export type HolidayType = {
+  id?: string;
   title: string;
   date: string;
 }[];
 
 export type EventType = {
+  id?: string;
   title: string;
   allDay?: boolean;
   createdAt?: string;
@@ -64,6 +65,7 @@ export type EventType = {
 }[];
 
 export type EventObjType = {
+  id?: string;
   title: string;
   allDay?: boolean;
   createdAt: string;
@@ -76,6 +78,7 @@ export type EventObjType = {
 };
 
 export type AllEventType = {
+  id?: string;
   title: string;
   date?: string;
   allDay?: boolean;
