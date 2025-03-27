@@ -174,25 +174,34 @@ const MyFullCalendar = () => {
   }; 
 
   const handleEventClick = (info: EventClickArg) => {
-    const rect = info.el.getBoundingClientRect()
-    setIsShowModal((prevState) => !prevState);
     
-    if (rect.left > window.innerWidth / 2) {
-      setLeft(rect.left - info.el.clientWidth);
-    } else if (rect.left < window.innerWidth / 2) {
-      setLeft(rect.left + info.el.offsetWidth);
-    }
-    
-    setTop(rect.top);
-    setModalData(info.event);
   };
   const handleMouseEnter = (info: EventHoveringArg) => {
-    
-  };
-  const handleMouseLeave = (info: EventHoveringArg) => {
-    
-  };
+    if (info.view.type === "timeGridDay" || info.view.type === "multiMonthYear") return;
   
+    const rect = info.el.getBoundingClientRect()
+    setIsShowModal(true);
+    //setTop(rect.top + pageYOffset)
+    if (rect.left > window.innerWidth / 2) {
+      setLeft(info.el.getBoundingClientRect().left);
+    } else if (rect.left < window.innerWidth / 2) {
+      setLeft(rect.left + info.el.clientWidth);
+    }
+    if (rect.top > window.innerHeight / 2) {
+      setTop((rect.top + pageYOffset) - rect.height * 2);
+    } else if (rect.top < window.innerHeight / 2) {
+      setTop(rect.bottom + pageYOffset);
+    }
+    setModalData(info.event);
+  };
+  const handleMouseLeave = () => {
+    setIsShowModal(false);
+  };
+  //view.type
+  //日：timeGridDay
+  //週：timeGridWeek
+  //月：dayGridMonth
+  //年：multiMonthYear
   return (
     <>
       {user?.emailVerified || emailUser?.emailVerified ? (
@@ -204,6 +213,7 @@ const MyFullCalendar = () => {
               center: "title",
               right: "timeGridDay, timeGridWeek, dayGridMonth, multiMonthYear",
             }}
+            height="100vh"
             buttonText={{
               today: "今日",
               day: "日",

@@ -73,7 +73,7 @@ const Modal = ({ event, style }: ModalProps ) => {
               
             </div>
             {/* <p>{data.dateStr}</p> 日付のみ、日ビューの時は + 時間(2025-03-23T07:00:00+09:00") ここにしか時間のデータはない */}
-          </div>
+        </div>
       ))}
     </>
   )

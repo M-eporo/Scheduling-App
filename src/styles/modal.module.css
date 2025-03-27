@@ -6,7 +6,9 @@
   border-radius: 5px;
   padding: 0.5em;
   background-color: #fff;
+  font-size: var(--s-font);
   z-index: 999;
+  pointer-events: none;
 }
 
 .startTimeNoEnd {
