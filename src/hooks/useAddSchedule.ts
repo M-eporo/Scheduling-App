@@ -1,4 +1,4 @@
-import { addDoc, collection } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { EventObjType } from "../types";
 import { useAppDispatch } from "../app/hooks";
@@ -13,7 +13,7 @@ export const useAddSchedules = () => {
     start = "", end = "", startStr = "", endStr = ""
   }: EventObjType) => {
     if (auth.currentUser) {
-      const schedulesRef = collection(db, "user", auth.currentUser.uid, "schedules");
+      const docRef = doc(db, "user", auth.currentUser.uid, "schedules", id as string);
       const data: EventObjType = {
         id,
         title,
@@ -31,7 +31,8 @@ export const useAddSchedules = () => {
         data.endStr = endStr;
       };
       try {
-        await addDoc(schedulesRef, data);
+        console.log(111);
+        await setDoc(docRef, data, {merge: true});
         dispatch(addSchedulesReducer(data));
       } catch (err) {
         console.error("スケジュール追加エラー: ", err);

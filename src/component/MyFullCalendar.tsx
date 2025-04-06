@@ -4,10 +4,10 @@ import listPlugin from '@fullcalendar/list';
 import multiMonthPlugin from '@fullcalendar/multimonth'
 import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { DateSelectArg, EventClickArg, EventHoveringArg } from "@fullcalendar/core";
-import { EventImpl } from "@fullcalendar/core/internal";
+import { DateSelectArg, EventClickArg, EventMountArg } from "@fullcalendar/core";
 
 import { useEffect, useState } from "react";
+import {Tooltip as ReactTooltip} from "react-tooltip";
 
 import { auth } from "../firebase";
 
@@ -19,8 +19,10 @@ import Modal from "./Modal";
 
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { fetchHolidays } from "../utils/getHolidays";
-import { useAddSchedules } from "../utils/useAddSchedule";
 import { getUserSchedules } from "../utils/getUserSchedules";
+import { timeGetter } from "../utils/timeGetter";
+import { useAddSchedules } from "../hooks/useAddSchedule";
+//import useElementStyle from "../hooks/useElementStyle";
 import { setSchedulesReducer } from "../features/scheduleSlice";
 
 import type {
@@ -28,6 +30,7 @@ import type {
   EventType,
   InitialEventType
 } from "../types";
+import { createTooltipHtml } from "../utils/createTooltipHtml";
 
 const MyFullCalendar = () => {
   const [allEvents, setAllEvents] = useState<AllEventType>([]);
@@ -38,13 +41,12 @@ const MyFullCalendar = () => {
   const [initialEvents, setInitialEvents] = useState<InitialEventType>([]);
 
   //Modalの表示
-  const [isShowModal, setIsShowModal] = useState<boolean>(false);
-  const [modalData, setModalData] = useState<EventImpl>();
-  const [top, setTop] = useState(0);
-  const [left, setLeft] = useState(0);
+  const [isAlterShow, setIsAlterShow] = useState(false);
+  const [modalData, setModalData] = useState<EventType>([]);
 
   const user = useAppSelector((state) => state.user.user);
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
+  const schedules = useAppSelector((state) => state.schedules.schedules);
   const addSchedule = useAddSchedules();
   const dispatch = useAppDispatch();
   //初回レンダリング時
@@ -68,7 +70,8 @@ const MyFullCalendar = () => {
       };
       getStoredSchedules();
     }
-  }, [auth.currentUser]);
+   
+  }, []);
 
   //初期イベント情報の設定
   //祝日とFirestoreに保存されてデータ
@@ -87,11 +90,12 @@ const MyFullCalendar = () => {
       ...clickEvents,
       ...selectEvents
     ]);
+
   }, [initialEvents, clickEvents, selectEvents]);
 
   //全てのイベントが取得出来たら、Reduxを更新
   useEffect(() => {
-    dispatch(setSchedulesReducer(allEvents))
+    dispatch(setSchedulesReducer(allEvents));
   }, [allEvents, dispatch]);
 
   const getDayClassName = (date: Date) => {
@@ -107,11 +111,11 @@ const MyFullCalendar = () => {
     if (day === 6) classNames.push("saturday");
     return classNames;
   };
-
-
+  
   const handleClick = (info: DateClickArg) => {
     info.jsEvent.preventDefault();
     console.log(info);
+    //入力用Uiを作成する
     const title = prompt("イベントタイトルを入力してください");
     if (title) {
       const id = uuidv4();
@@ -174,28 +178,30 @@ const MyFullCalendar = () => {
   }; 
 
   const handleEventClick = (info: EventClickArg) => {
-    
-  };
-  const handleMouseEnter = (info: EventHoveringArg) => {
-    if (info.view.type === "timeGridDay" || info.view.type === "multiMonthYear") return;
-  
-    const rect = info.el.getBoundingClientRect()
-    setIsShowModal(true);
-    //setTop(rect.top + pageYOffset)
-    if (rect.left > window.innerWidth / 2) {
-      setLeft(info.el.getBoundingClientRect().left);
-    } else if (rect.left < window.innerWidth / 2) {
-      setLeft(rect.left + info.el.clientWidth);
+    info.jsEvent.preventDefault();
+    //clickして、スケジュールの変更、削除、
+    //clickしたらデータを表示するUIを作成する
+    if (auth.currentUser) {
+      const data = schedules.filter(schedule => schedule.id === info.event.id);
+      setModalData(data);
+      setIsAlterShow(true);
     }
-    if (rect.top > window.innerHeight / 2) {
-      setTop((rect.top + pageYOffset) - rect.height * 2);
-    } else if (rect.top < window.innerHeight / 2) {
-      setTop(rect.bottom + pageYOffset);
-    }
-    setModalData(info.event);
   };
-  const handleMouseLeave = () => {
-    setIsShowModal(false);
+
+  //React Tooltip Popup
+  const handleEventDidMount = (info: EventMountArg) => {
+    const title = info.event.title;
+    const isAllDay = info.event.allDay ? "(終日)" : "";
+    const start = timeGetter(info.event.startStr) ? timeGetter(info.event.startStr) : "";
+    const end = timeGetter(info.event.endStr) ? timeGetter(info.event.endStr) : "";
+    const safeHtml = createTooltipHtml({
+      title,
+      isAllDay,
+      start,
+      end
+    });
+    info.el.setAttribute('data-tooltip-id', 'event-tooltip');
+    info.el.setAttribute('data-tooltip-html', safeHtml);
   };
   //view.type
   //日：timeGridDay
@@ -238,8 +244,24 @@ const MyFullCalendar = () => {
             dateClick={handleClick}
             select={handleSelect}
             eventClick={handleEventClick}
-            eventMouseEnter={handleMouseEnter}
-            eventMouseLeave={handleMouseLeave}
+            eventDidMount={handleEventDidMount}
+          />
+          <ReactTooltip
+            id="event-tooltip"
+            place="top"
+            render={({content }) => (
+              <div dangerouslySetInnerHTML={{__html: content ?? ""}}></div>  
+            )}
+            style={{
+              boxSizing: "border-box",
+              fontSize: "12px",
+              fontWeight: "semi-bold",
+              backgroundColor: "#3BC22F",
+              color: "#fff",
+              filter: "brightness(1.2)",
+              zIndex: 999,
+              boxShadow: "0 0 5px 2px rgba(0,0,0,0.2)"
+            }}
           />
           <Button
             styleName="logout"
@@ -253,15 +275,14 @@ const MyFullCalendar = () => {
             }}
             value="ログアウト"
           />
-          {isShowModal && modalData &&
+          {isAlterShow &&
             <Modal
-              style={{
-                top: top,
-                left: left,
-              }}
-              event={modalData}
+              setIsAlterShow={setIsAlterShow}
+              setStoredSchedules={setStoredSchedules}
+              data={modalData}
             />
           }
+          
         </div>
       ) : (
         <EmailVerifying />

@@ -1,20 +1,21 @@
 .container {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   box-sizing: border-box;
   min-width: max-width;
   border: 1px solid #000;
   border-radius: 5px;
-  padding: 0.5em;
+  padding: 2em;
   background-color: #fff;
   font-size: var(--s-font);
   z-index: 999;
-  pointer-events: none;
 }
 
-.startTimeNoEnd {
-  color: blue;
+.input {
+  composes: input from "./input.module.css";
 }
-.startTime,
-.endTime {
-  color: red;
+.btnContainer {
+  composes: flex-center from "./utils.module.css";
 }

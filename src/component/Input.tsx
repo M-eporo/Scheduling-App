@@ -1,14 +1,16 @@
 import styles from "../styles/input.module.css";
 type PropsType = {
-  type: "email" | "password" | "text" | "date" | "file";
+  type: "email" | "password" | "text" | "date" | "file" | "time" | "checkbox";
   placeholder: string;
   name: string;
   id: string;
   value: {
     name?: string;
     nickname?: string;
-    email: string;
-    password: string;
+    email?: string;
+    password?: string;
+    startTime?: string;
+    endTime?: string;
   };
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }

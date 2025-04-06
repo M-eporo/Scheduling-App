@@ -23,6 +23,7 @@ export type InitialSchedulesStateType = {
 export type ScheduleType = {
   id?: string;
   title: string;
+  desc?: string;
   allDay: boolean;
   createdAt: string;
   date?: string;
@@ -36,6 +37,7 @@ export type ScheduleType = {
 export type InitialEventType = {
   id?: string;
   title: string;
+  desc?: string;
   date?: string;
   allDay?: boolean;
   createdAt?: string;
@@ -49,11 +51,13 @@ export type HolidayType = {
   id?: string;
   title: string;
   date: string;
+  desc?: string;
 }[];
 
 export type EventType = {
   id?: string;
   title: string;
+  desc?: string;
   allDay?: boolean;
   createdAt?: string;
   date?: string;
@@ -67,6 +71,7 @@ export type EventType = {
 export type EventObjType = {
   id?: string;
   title: string;
+  desc?: string;
   allDay?: boolean;
   createdAt: string;
   date?: string;
@@ -80,6 +85,7 @@ export type EventObjType = {
 export type AllEventType = {
   id?: string;
   title: string;
+  desc?: string;
   date?: string;
   allDay?: boolean;
   createdAt?: string;

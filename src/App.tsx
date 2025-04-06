@@ -8,7 +8,7 @@ import Login from "./component/Login";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "./utils/ErrorFallback";
 import { emailLogin, emailLogout } from "./features/emailUserSlice";
-import { useGetUserInfo } from "./utils/useGetUserInfo";
+import { useGetUserInfo } from "./hooks/useGetUserInfo";
 import { doc, setDoc } from "firebase/firestore";
 
 const App = () => {
