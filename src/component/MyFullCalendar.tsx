@@ -5,24 +5,19 @@ import multiMonthPlugin from '@fullcalendar/multimonth'
 import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { DateSelectArg, EventClickArg, EventMountArg } from "@fullcalendar/core";
-
 import { useEffect, useState } from "react";
 import {Tooltip as ReactTooltip} from "react-tooltip";
-
 import { auth } from "../firebase";
-
 import { v4 as uuidv4 } from "uuid";
-
 import Button from "./Button";
 import EmailVerifying from "./EmailVerifying";
-import Modal from "./Modal";
-
+import SchedulesModal from "./SchedulesModal";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { fetchHolidays } from "../utils/getHolidays";
-import { getUserSchedules } from "../utils/getUserSchedules";
 import { timeGetter } from "../utils/timeGetter";
+import { createTooltipHtml } from "../utils/createTooltipHtml";
 import { useAddSchedules } from "../hooks/useAddSchedule";
-//import useElementStyle from "../hooks/useElementStyle";
+import { useGetUserSchedules } from "../hooks/useGetUserSchedules";
 import { setSchedulesReducer } from "../features/scheduleSlice";
 
 import type {
@@ -30,19 +25,19 @@ import type {
   EventType,
   InitialEventType
 } from "../types";
-import { createTooltipHtml } from "../utils/createTooltipHtml";
 
 const MyFullCalendar = () => {
-  const [allEvents, setAllEvents] = useState<AllEventType>([]);
+  const [events, setEvents] = useState<AllEventType>([]);
   const [holidayEvents, setHolidayEvents] = useState<InitialEventType>([]);
   const [storedSchedules, setStoredSchedules] = useState<InitialEventType>([]);
-  const [clickEvents, setClickEvents] = useState<EventType>([]);
-  const [selectEvents, setSelectEvents] = useState<EventType>([]);
-  const [initialEvents, setInitialEvents] = useState<InitialEventType>([]);
+  //const [allEvents, setAllEvents] = useState<AllEventType>([]);
+  // const [clickEvents, setClickEvents] = useState<EventType>([]);
+  // const [selectEvents, setSelectEvents] = useState<EventType>([]);
+  // const [initialEvents, setInitialEvents] = useState<InitialEventType>([]);
 
   //Modalの表示
-  const [isAlterShow, setIsAlterShow] = useState(false);
-  const [modalData, setModalData] = useState<EventType>([]);
+  const [isSchedulesModalShow, setIsSchedulesModalShow] = useState(false);
+  const [schedulesModalData, setSchedulesModalData] = useState<EventType>([]);
 
   const user = useAppSelector((state) => state.user.user);
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
@@ -55,48 +50,55 @@ const MyFullCalendar = () => {
     const getHolidays = async () => {
       const holidays = await fetchHolidays();
       setHolidayEvents(holidays);
-    }
+    };
     getHolidays();
+    
   }, []);
-
   //Firestoreに保存されているスケジュールデータを取得
+  //onSnapShotによる自動更新
+  const userSchedules = useGetUserSchedules();
   useEffect(() => {
-    if (auth.currentUser) {
-      const getStoredSchedules = async () => {
-        const storedSchedules = await getUserSchedules();
-        if (storedSchedules) {
-          setStoredSchedules(storedSchedules);
-        }
-      };
-      getStoredSchedules();
-    }
-   
-  }, []);
-
+    setStoredSchedules(userSchedules);
+  }, [userSchedules]);
+  // useEffect(() => {
+  //   if (auth.currentUser) {
+  //     const getStoredSchedules = async () => {
+  //       const storedSchedules = await getUserSchedules();
+  //       if (storedSchedules) {
+  //         setStoredSchedules(storedSchedules);
+  //       }
+  //     };
+  //     getStoredSchedules();
+  //   }
+  // }, []);
+  
   //初期イベント情報の設定
   //祝日とFirestoreに保存されてデータ
   //InitialEventsの設定に使用
+  // useEffect(() => {
+  //   setInitialEvents([
+  //     ...holidayEvents,
+  //     ...storedSchedules
+  //   ]);
+  // }, [holidayEvents, storedSchedules]);
+  // //全てのイベントをセット
+  // useEffect(() => {
+  //   setAllEvents([
+  //     ...initialEvents,
+  //     ...clickEvents,
+  //     ...selectEvents
+  //   ]);
+  // }, [initialEvents, clickEvents, selectEvents]);
   useEffect(() => {
-    setInitialEvents([
+    setEvents([
       ...holidayEvents,
       ...storedSchedules
     ]);
   }, [holidayEvents, storedSchedules]);
-
-  //全てのイベントをセット
-  useEffect(() => {
-    setAllEvents([
-      ...initialEvents,
-      ...clickEvents,
-      ...selectEvents
-    ]);
-
-  }, [initialEvents, clickEvents, selectEvents]);
-
   //全てのイベントが取得出来たら、Reduxを更新
   useEffect(() => {
-    dispatch(setSchedulesReducer(allEvents));
-  }, [allEvents, dispatch]);
+    dispatch(setSchedulesReducer(events));
+  }, [events, dispatch]);
 
   const getDayClassName = (date: Date) => {
     const day: number = date.getDay();
@@ -119,18 +121,17 @@ const MyFullCalendar = () => {
     const title = prompt("イベントタイトルを入力してください");
     if (title) {
       const id = uuidv4();
-      setClickEvents([
-        ...clickEvents,
-        {
-          id,
-          title,
-          allDay: info.allDay,
-          createdAt: new Date().toISOString(),
-          date: info.date.toISOString(),
-          dateStr: info.dateStr,
-        }
-      ]);
-
+      // setClickEvents([
+      //   ...clickEvents,
+      //   {
+      //     id,
+      //     title,
+      //     allDay: info.allDay,
+      //     createdAt: new Date().toISOString(),
+      //     date: info.date.toISOString(),
+      //     dateStr: info.dateStr,
+      //   }
+      // ]);
       //Firestoreに新規イベントを保存(一日)
       addSchedule({
         id,
@@ -149,20 +150,19 @@ const MyFullCalendar = () => {
     
     if (title) {
       const id = uuidv4();
-      setSelectEvents([
-        ...selectEvents,
-        {
-          id,
-          title,
-          allDay: info.allDay,
-          createdAt: new Date().toISOString(),
-          start: info.start.toISOString(),
-          end: info.end.toISOString(),
-          startStr: info.startStr,
-          endStr: info.endStr,
-        }
-      ]);
-
+      // setSelectEvents([
+      //   ...selectEvents,
+      //   {
+      //     id,
+      //     title,
+      //     allDay: info.allDay,
+      //     createdAt: new Date().toISOString(),
+      //     start: info.start.toISOString(),
+      //     end: info.end.toISOString(),
+      //     startStr: info.startStr,
+      //     endStr: info.endStr,
+      //   }
+      // ]);
       //Firestoreに新規イベントを保存(複数日)
       addSchedule({
         id,
@@ -179,12 +179,11 @@ const MyFullCalendar = () => {
 
   const handleEventClick = (info: EventClickArg) => {
     info.jsEvent.preventDefault();
-    //clickして、スケジュールの変更、削除、
-    //clickしたらデータを表示するUIを作成する
+    //clickしてスケジュールの変更、削除
     if (auth.currentUser) {
       const data = schedules.filter(schedule => schedule.id === info.event.id);
-      setModalData(data);
-      setIsAlterShow(true);
+      setSchedulesModalData(data);
+      setIsSchedulesModalShow(true);
     }
   };
 
@@ -240,7 +239,7 @@ const MyFullCalendar = () => {
             selectMinDistance={1}
             dayMaxEventRows={3}
             dayCellClassNames={(info) => getDayClassName(info.date)}
-            events={allEvents}
+            events={events}
             dateClick={handleClick}
             select={handleSelect}
             eventClick={handleEventClick}
@@ -275,14 +274,12 @@ const MyFullCalendar = () => {
             }}
             value="ログアウト"
           />
-          {isAlterShow &&
-            <Modal
-              setIsAlterShow={setIsAlterShow}
-              setStoredSchedules={setStoredSchedules}
-              data={modalData}
+          {isSchedulesModalShow &&
+            <SchedulesModal
+              setIsSchedulesModalShow={setIsSchedulesModalShow}
+              data={schedulesModalData}
             />
           }
-          
         </div>
       ) : (
         <EmailVerifying />

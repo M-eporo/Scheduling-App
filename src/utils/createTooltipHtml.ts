@@ -1,4 +1,4 @@
-import { escapeHtml } from "./escapeHTML";
+import { escapeHtml } from "./escapeHtml";
 
 export const createTooltipHtml = ({
   title,

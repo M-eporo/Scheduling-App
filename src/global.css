@@ -5,6 +5,7 @@
   --white: #fff;
   /* typography */
   --s-font: 12px;
+  --main-text-color: #257b1e;
 }
 body, h1, h2, h3, h4, h5, h6, p, ul, li, figure, img  {
   margin: 0;

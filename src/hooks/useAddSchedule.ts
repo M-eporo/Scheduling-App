@@ -1,14 +1,14 @@
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { EventObjType } from "../types";
 import { useAppDispatch } from "../app/hooks";
 import { addSchedulesReducer } from "../features/scheduleSlice";
+import { EventObjType } from "../types";
 
 export const useAddSchedules = () => {
   const dispatch = useAppDispatch();
 
   const addSchedule = async ({
-    id, title, allDay = true, createdAt,
+    id, title, desc = "", allDay = true, createdAt,
     date = "", dateStr = "", 
     start = "", end = "", startStr = "", endStr = ""
   }: EventObjType) => {
@@ -17,6 +17,7 @@ export const useAddSchedules = () => {
       const data: EventObjType = {
         id,
         title,
+        desc,
         allDay,
         createdAt
       }
@@ -31,7 +32,6 @@ export const useAddSchedules = () => {
         data.endStr = endStr;
       };
       try {
-        console.log(111);
         await setDoc(docRef, data, {merge: true});
         dispatch(addSchedulesReducer(data));
       } catch (err) {

@@ -1,29 +1,28 @@
-import styles from "../styles/modal.module.css";
-import { EventType, InitialEventType } from "../types";
+import styles from "../styles/schedulesModal.module.css";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
-import { dateFormatter } from "../utils/dateFormatter";
-import Button from "./Button";
 import { deleteDoc, doc } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import Button from "./Button";
 import { useAddSchedules } from "../hooks/useAddSchedule";
+import { dateFormatter } from "../utils/dateFormatter";
+import { isSameDate } from "../utils/isSameDate";
+import { EventType } from "../types";
 
 type Props = {
-  setIsAlterShow: Dispatch<SetStateAction<boolean>>;
-  setStoredSchedules: Dispatch<SetStateAction<InitialEventType>>;
+  setIsSchedulesModalShow: Dispatch<SetStateAction<boolean>>;
   data: EventType;
 };
 
-const Modal = (({
-  setIsAlterShow,
-  setStoredSchedules,
+const SchedulesModal = (({
+  setIsSchedulesModalShow,
   data
 }: Props) => {
 
   const addSchedules = useAddSchedules();
-
   const [form, setForm] = useState({
     id: data[0].id,
     title: data[0].title,
+    desc: data[0].desc,
     allDay: data[0].allDay,
     createdAt: data[0].createdAt,
     date: data[0].date,
@@ -33,21 +32,16 @@ const Modal = (({
     startStr: data[0].startStr,
     endStr: data[0].endStr,
   });
-  console.log(data);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
   };
-  console.log(form);
-  // const handleFormChecked = (e: ChangeEvent<HTMLInputElement>) => {
-  //   setForm({
-  //     ...form,
-  //     [e.target.name]: e.target.checked
-  //   });
-  // };
+  
   //イベント情報の更新
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -58,6 +52,7 @@ const Modal = (({
         addSchedules({
           id: data[0].id,
           title: form.title ? form.title : data[0].title,
+          desc: form.desc ? form.desc : data[0].desc,
           allDay: data[0].allDay,
           createdAt: data[0].createdAt as string,
           date: data[0].date,
@@ -67,19 +62,22 @@ const Modal = (({
           startStr: data[0].startStr,
           endStr: data[0].endStr,
         });
-        if (form.title) {
-          setStoredSchedules(prevSchedules => prevSchedules.map((schedule) => {
-            if (schedule.id === data[0].id) {
-              return {
-                ...schedule,
-                title: form.title
-              };
-            }
-            return schedule;
-          }));
-        } 
-      }
+        // if (form.title) {
+        //   setStoredSchedules(prevSchedules => prevSchedules.map((schedule) => {
+        //     if (schedule.id === data[0].id) {
+        //       return {
+        //         ...schedule,
+        //         title: form.title
+        //       };
+        //     }
+        //     return schedule;
+        //   }));
+        // } 
+      } else return;
+    } else {
+      auth.signOut();
     }
+    setIsSchedulesModalShow(false);
   };
 
   //イベントを削除
@@ -90,23 +88,36 @@ const Modal = (({
       const answer = confirm("スケジュールを削除します。\nよろしいですか?");
       if (answer) {
         await deleteDoc(docRef);
-        setStoredSchedules(prevEvents => prevEvents.filter((prevEvent) => {
-        return prevEvent.id !== data[0].id;
-        }));
-      }
-      setIsAlterShow(false);
+        //setStoredSchedules(prevEvents => prevEvents.filter((prevEvent) => {
+        //return prevEvent.id !== data[0].id;
+        //}));
+      } else return;
     } else {
       auth.signOut();
     }
+    setIsSchedulesModalShow(false);
   };
 
   return (
     <>
       <div className={styles.container}>
-        <h4 className={styles.title}>{
-          data[0].dateStr &&
-          dateFormatter(data[0].dateStr)
-        }</h4>
+        <h4 className={styles.title}>
+          {
+            data[0].startStr && data[0].endStr && isSameDate(data[0].startStr, data[0].endStr)
+              ?
+              dateFormatter(data[0].startStr)
+              :
+              data[0].startStr && data[0].endStr && !isSameDate(data[0].startStr, data[0].endStr)
+              ?
+              `${dateFormatter(data[0].startStr)} ～ ${dateFormatter(data[0].endStr,true, isSameDate(data[0].startStr, data[0].endStr))}`
+              :
+                data[0].startStr && !data[0].endStr
+                ?
+                dateFormatter(data[0].startStr)
+                :
+                data[0].dateStr && dateFormatter(data[0].dateStr)
+          }
+        </h4>
         <form onSubmit={handleSubmit}>
           <input
             className={styles.input}
@@ -117,6 +128,13 @@ const Modal = (({
             value={form.title}
             onChange={handleChange}
           />
+          <textarea
+            className={styles.textarea}
+            name="desc"
+            id="desc"
+            value={form.desc}
+            onChange={handleChange}
+          ></textarea>
           <div className={styles.btnContainer}>
             <Button
               type="submit"
@@ -135,7 +153,7 @@ const Modal = (({
               type="button"
               disabled={false}
               value="キャンセル"
-              onClick={setIsAlterShow}
+              onClick={setIsSchedulesModalShow}
               styleName="cancelBtn"
             />
           </div>
@@ -146,4 +164,4 @@ const Modal = (({
   )
 });
 
-export default Modal;
+export default SchedulesModal;
