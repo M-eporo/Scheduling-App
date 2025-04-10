@@ -8,15 +8,14 @@ import { DateSelectArg, EventClickArg, EventMountArg } from "@fullcalendar/core"
 import { useEffect, useState } from "react";
 import {Tooltip as ReactTooltip} from "react-tooltip";
 import { auth } from "../firebase";
-import { v4 as uuidv4 } from "uuid";
 import Button from "./Button";
 import EmailVerifying from "./EmailVerifying";
 import SchedulesModal from "./SchedulesModal";
+import ScheduleRegister from "./ScheduleRegister";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { fetchHolidays } from "../utils/getHolidays";
 import { timeGetter } from "../utils/timeGetter";
 import { createTooltipHtml } from "../utils/createTooltipHtml";
-import { useAddSchedules } from "../hooks/useAddSchedule";
 import { useGetUserSchedules } from "../hooks/useGetUserSchedules";
 import { setSchedulesReducer } from "../features/scheduleSlice";
 
@@ -39,10 +38,13 @@ const MyFullCalendar = () => {
   const [isSchedulesModalShow, setIsSchedulesModalShow] = useState(false);
   const [schedulesModalData, setSchedulesModalData] = useState<EventType>([]);
 
+  //ScheduleRegisterの表示
+  const [isSchedulesRegisterShow, setIsSchedulesRegisterShow] = useState(false);
+  const [schedulesRegisterData, setSchedulesRegisterData] = useState<DateClickArg | DateSelectArg | null>(null);
+
   const user = useAppSelector((state) => state.user.user);
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
   const schedules = useAppSelector((state) => state.schedules.schedules);
-  const addSchedule = useAddSchedules();
   const dispatch = useAppDispatch();
   //初回レンダリング時
   useEffect(() => {
@@ -117,10 +119,13 @@ const MyFullCalendar = () => {
   const handleClick = (info: DateClickArg) => {
     info.jsEvent.preventDefault();
     console.log(info);
+
+    setIsSchedulesRegisterShow(true);
+    setSchedulesRegisterData(info);
     //入力用Uiを作成する
-    const title = prompt("イベントタイトルを入力してください");
-    if (title) {
-      const id = uuidv4();
+    //const title = prompt("イベントタイトルを入力してください");
+    // if (title) {
+      // const id = uuidv4();
       // setClickEvents([
       //   ...clickEvents,
       //   {
@@ -133,23 +138,23 @@ const MyFullCalendar = () => {
       //   }
       // ]);
       //Firestoreに新規イベントを保存(一日)
-      addSchedule({
-        id,
-        title,
-        allDay: info.allDay,
-        createdAt: new Date().toISOString(),
-        date: info.date.toISOString(),
-        dateStr: info.dateStr,
-      });
-    }
+      // addSchedule({
+      //   id,
+      //   title,
+      //   allDay: info.allDay,
+      //   createdAt: new Date().toISOString(),
+      //   date: info.date.toISOString(),
+      //   dateStr: info.dateStr,
+      // });
+    //}
   };
 
   const handleSelect = (info: DateSelectArg) => {
-    const title = prompt("イベントタイトルを入力してください(セレクト)");
+    //const title = prompt("イベントタイトルを入力してください(セレクト)");
     console.log(info);
     
-    if (title) {
-      const id = uuidv4();
+    //if (title) {
+      //const id = uuidv4();
       // setSelectEvents([
       //   ...selectEvents,
       //   {
@@ -164,17 +169,17 @@ const MyFullCalendar = () => {
       //   }
       // ]);
       //Firestoreに新規イベントを保存(複数日)
-      addSchedule({
-        id,
-        title,
-        allDay: info.allDay,
-        createdAt: new Date().toISOString(),
-        start: info.start.toISOString(),
-        end: info.end.toISOString(),
-        startStr: info.startStr,
-        endStr: info.endStr,
-      });
-    }
+      // addSchedule({
+      //   id,
+      //   title,
+      //   allDay: info.allDay,
+      //   createdAt: new Date().toISOString(),
+      //   start: info.start.toISOString(),
+      //   end: info.end.toISOString(),
+      //   startStr: info.startStr,
+      //   endStr: info.endStr,
+      // });
+    //}
   }; 
 
   const handleEventClick = (info: EventClickArg) => {
@@ -278,6 +283,12 @@ const MyFullCalendar = () => {
             <SchedulesModal
               setIsSchedulesModalShow={setIsSchedulesModalShow}
               data={schedulesModalData}
+            />
+          }
+          {isSchedulesRegisterShow && 
+            <ScheduleRegister
+              setIsShow={setIsSchedulesRegisterShow}
+              data={schedulesRegisterData}
             />
           }
         </div>

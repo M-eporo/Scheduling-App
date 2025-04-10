@@ -22,8 +22,13 @@ button {
 .alterBtn {
   composes: loginBtn;
   border: 1px solid var(--main-color);
-  background-color: #fff;
-  color: var(--main-color);
+  /* background-color: #fff;
+  color: var(--main-color); */
+  margin: 1em auto 0;
+}
+.registerBtn {
+  composes: loginBtn;
+  border: 1px solid var(--main-color);
   margin: 1em auto 0;
 }
 .cancelBtn {
@@ -37,5 +42,5 @@ button {
   composes: loginBtn;
 }
 .deleteBtn {
-  composes: cancelBtn;
+  composes: registerBtn;
 }
