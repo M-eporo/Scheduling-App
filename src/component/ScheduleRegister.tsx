@@ -36,25 +36,24 @@ const ScheduleRegister = ({setIsShow, data }: Props) => {
     label: "トマト",
     style: "tomato",
   });
-  console.log(form);
   useEffect(() => {
     if (data === null) return;
     if ("dateStr" in data) {
-      setForm(prev => ({
-        ...prev,
+      setForm({
+        ...form,
         date: data.date.toISOString(),
         dateStr: data.dateStr
-      }));
+      });
     } else if ("startStr" in data && "endStr" in data) {
-      setForm(prev => ({
-        ...prev,
+      setForm({
+        ...form,
         start: data.start.toISOString(),
         startStr: data.startStr,
         end: data.end.toISOString(),
         endStr: data.endStr
-      }));
+      });
     }
-  }, [data]);
+  }, [data, form]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
