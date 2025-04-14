@@ -1,0 +1,82 @@
+.container {
+  max-width: 260px;
+  position: relative;
+  margin-top: 0.5em;
+}
+.selectedOption {
+  display: grid;
+  place-items: center;
+  width: 65px;
+  padding: 0.5em 0.25em;
+  border: 1px solid var(--main-color);
+  border-radius: 3px;
+  color: #333;
+  cursor: pointer;
+}
+.arrow {
+  color: var(--main-color);
+}
+.flex {
+  composes: flex-row from "./utils.module.css";
+  column-gap: 0.5em;
+}
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: none;
+  grid-template-columns: repeat(2,1fr);
+  padding: 0.5em 0;
+  font-size: 12px;
+  border-radius: 8px;
+  background-color: #eee;
+  box-shadow: 2px 2px 9px rgba(0,0,0,0.2);
+}
+.list {
+  display: grid;
+  grid-template-columns: 70% 30%;
+  place-items: center;
+  padding: 0.2em;
+  color: #333;
+  cursor: pointer;
+}
+.labelText {
+  justify-self: flex-start;
+}
+.tomato {
+  color: #D50000;
+}
+.framingo {
+  color: #E67C73;
+}
+.orange{
+  color: #F4511E;
+}
+.banana {
+  color: #F6BF26;
+}
+.sage {
+  color: #33B679;
+}
+.basil {
+  color: #0B8043;
+}
+.peacock {
+  color: #039BE5;
+}
+.blueberry {
+  color: #3F51B5;
+}
+.lavendor {
+  color: #7986CB;
+}
+.grape {
+  color: #8E24AA;
+}
+.graphite {
+  color: #616161;
+}
+.show{
+  display: none;
+}

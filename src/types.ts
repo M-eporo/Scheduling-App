@@ -32,6 +32,8 @@ export type ScheduleType = {
   end?: string;
   startStr?: string;
   endStr?: string;
+  bgColor: string;
+  borderColor: string;
 };
 
 export type InitialEventType = {
@@ -46,12 +48,16 @@ export type InitialEventType = {
   end?: string;
   startStr?: string;
   endStr?: string;
+  bgColor?: string;
+  borderColor?: string;
 }[];
 export type HolidayType = {
   id?: string;
   title: string;
   date: string;
   desc?: string;
+  bgColor?: string;
+  borderColor?: string;
 }[];
 
 export type EventType = {
@@ -66,6 +72,8 @@ export type EventType = {
   end?: string;
   startStr?: string;
   endStr?: string;
+  bgColor: string;
+  borderColor: string;
 }[];
 
 export type EventObjType = {
@@ -80,6 +88,8 @@ export type EventObjType = {
   end?: string;
   startStr?: string;
   endStr?: string;
+  bgColor: string;
+  borderColor: string;
 };
 
 export type AllEventType = {
@@ -94,4 +104,12 @@ export type AllEventType = {
   end?: string;
   startStr?: string;
   endStr?: string;
+  bgColor?: string;
+  borderColor?: string;
 }[];
+
+export type ColorOptionType = {
+  value: string;
+  label: string;
+  style: string;
+};

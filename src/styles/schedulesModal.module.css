@@ -12,7 +12,6 @@
   font-size: var(--s-font);
   z-index: 999;
 }
-
 .input {
   composes: input from "./input.module.css";
 }
@@ -28,6 +27,7 @@
   border-radius: 5px;
   outline: none;
   color: var(--main-text-color);
+  letter-spacing: 0.2em;
   &:focus {
     filter: drop-shadow(0 0 5px #777);
   }

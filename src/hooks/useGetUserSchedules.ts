@@ -26,12 +26,14 @@ export const useGetUserSchedules = () => {
           end: document.end,
           startStr: document.startStr,
           endStr: document.endStr,
+          bgColor: document.bgColor,
+          borderColor: document.borderColor,
         });
       });
       setSchedules(documents);
+      
     });
     return () => unsubscribe();
   }, []);
-
   return schedules;
 };

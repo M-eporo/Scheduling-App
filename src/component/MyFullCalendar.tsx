@@ -26,13 +26,10 @@ import type {
 } from "../types";
 
 const MyFullCalendar = () => {
+  
   const [events, setEvents] = useState<AllEventType>([]);
   const [holidayEvents, setHolidayEvents] = useState<InitialEventType>([]);
   const [storedSchedules, setStoredSchedules] = useState<InitialEventType>([]);
-  //const [allEvents, setAllEvents] = useState<AllEventType>([]);
-  // const [clickEvents, setClickEvents] = useState<EventType>([]);
-  // const [selectEvents, setSelectEvents] = useState<EventType>([]);
-  // const [initialEvents, setInitialEvents] = useState<InitialEventType>([]);
 
   //Modalの表示
   const [isSchedulesModalShow, setIsSchedulesModalShow] = useState(false);
@@ -46,6 +43,7 @@ const MyFullCalendar = () => {
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
   const schedules = useAppSelector((state) => state.schedules.schedules);
   const dispatch = useAppDispatch();
+
   //初回レンダリング時
   useEffect(() => {
     //祝日のデータを取得
@@ -118,68 +116,13 @@ const MyFullCalendar = () => {
   
   const handleClick = (info: DateClickArg) => {
     info.jsEvent.preventDefault();
-    console.log(info);
-
     setIsSchedulesRegisterShow(true);
     setSchedulesRegisterData(info);
-    //入力用Uiを作成する
-    //const title = prompt("イベントタイトルを入力してください");
-    // if (title) {
-      // const id = uuidv4();
-      // setClickEvents([
-      //   ...clickEvents,
-      //   {
-      //     id,
-      //     title,
-      //     allDay: info.allDay,
-      //     createdAt: new Date().toISOString(),
-      //     date: info.date.toISOString(),
-      //     dateStr: info.dateStr,
-      //   }
-      // ]);
-      //Firestoreに新規イベントを保存(一日)
-      // addSchedule({
-      //   id,
-      //   title,
-      //   allDay: info.allDay,
-      //   createdAt: new Date().toISOString(),
-      //   date: info.date.toISOString(),
-      //   dateStr: info.dateStr,
-      // });
-    //}
   };
 
   const handleSelect = (info: DateSelectArg) => {
-    //const title = prompt("イベントタイトルを入力してください(セレクト)");
-    console.log(info);
-    
-    //if (title) {
-      //const id = uuidv4();
-      // setSelectEvents([
-      //   ...selectEvents,
-      //   {
-      //     id,
-      //     title,
-      //     allDay: info.allDay,
-      //     createdAt: new Date().toISOString(),
-      //     start: info.start.toISOString(),
-      //     end: info.end.toISOString(),
-      //     startStr: info.startStr,
-      //     endStr: info.endStr,
-      //   }
-      // ]);
-      //Firestoreに新規イベントを保存(複数日)
-      // addSchedule({
-      //   id,
-      //   title,
-      //   allDay: info.allDay,
-      //   createdAt: new Date().toISOString(),
-      //   start: info.start.toISOString(),
-      //   end: info.end.toISOString(),
-      //   startStr: info.startStr,
-      //   endStr: info.endStr,
-      // });
-    //}
+    setIsSchedulesRegisterShow(true);
+    setSchedulesRegisterData(info);
   }; 
 
   const handleEventClick = (info: EventClickArg) => {
@@ -191,7 +134,6 @@ const MyFullCalendar = () => {
       setIsSchedulesModalShow(true);
     }
   };
-
   //React Tooltip Popup
   const handleEventDidMount = (info: EventMountArg) => {
     const title = info.event.title;
@@ -292,6 +234,7 @@ const MyFullCalendar = () => {
             />
           }
         </div>
+        
       ) : (
         <EmailVerifying />
       )}

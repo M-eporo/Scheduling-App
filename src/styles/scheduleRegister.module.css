@@ -1,6 +1,9 @@
 .container {
   composes: container from "./schedulesModal.module.css";
 }
+.form {
+  margin-top: 1em;
+}
 .input {
   composes: input from "./input.module.css";
 }

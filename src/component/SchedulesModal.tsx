@@ -1,12 +1,13 @@
 import styles from "../styles/schedulesModal.module.css";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from "react";
 import { deleteDoc, doc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import Button from "./Button";
 import { useAddSchedules } from "../hooks/useAddSchedule";
 import { dateFormatter } from "../utils/dateFormatter";
 import { isSameDate } from "../utils/isSameDate";
-import { EventType } from "../types";
+import { ColorOptionType, EventType } from "../types";
+import SelectColor from "./SelectColor";
 
 type Props = {
   setIsSchedulesModalShow: Dispatch<SetStateAction<boolean>>;
@@ -31,7 +32,22 @@ const SchedulesModal = (({
     end: data[0].end,
     startStr: data[0].startStr,
     endStr: data[0].endStr,
+    bgColor: data[0].bgColor,
+    borderColor: data[0].borderColor,
   });
+
+  const [color, setColor] = useState<ColorOptionType>({
+      value: "#3788D8",
+      label: "トマト",
+      style: "tomato",
+  });
+  useEffect(() => {
+    setForm({
+      ...form,
+      bgColor: color.value,
+      borderColor: color.value,
+    });
+  }, [color]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
@@ -61,18 +77,9 @@ const SchedulesModal = (({
           end: data[0].end,
           startStr: data[0].startStr,
           endStr: data[0].endStr,
+          bgColor: form.bgColor,
+          borderColor: form.borderColor,
         });
-        // if (form.title) {
-        //   setStoredSchedules(prevSchedules => prevSchedules.map((schedule) => {
-        //     if (schedule.id === data[0].id) {
-        //       return {
-        //         ...schedule,
-        //         title: form.title
-        //       };
-        //     }
-        //     return schedule;
-        //   }));
-        // } 
       } else return;
     } else {
       auth.signOut();
@@ -88,9 +95,6 @@ const SchedulesModal = (({
       const answer = confirm("スケジュールを削除します。\nよろしいですか?");
       if (answer) {
         await deleteDoc(docRef);
-        //setStoredSchedules(prevEvents => prevEvents.filter((prevEvent) => {
-        //return prevEvent.id !== data[0].id;
-        //}));
       } else return;
     } else {
       auth.signOut();
@@ -135,6 +139,9 @@ const SchedulesModal = (({
             value={form.desc}
             onChange={handleChange}
           ></textarea>
+          <label htmlFor="color">ラベルの色
+            <SelectColor setColor={setColor} />
+          </label>
           <div className={styles.btnContainer}>
             <Button
               type="submit"

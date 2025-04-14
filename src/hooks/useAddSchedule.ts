@@ -10,7 +10,8 @@ export const useAddSchedules = () => {
   const addSchedule = async ({
     id, title, desc = "", allDay = true, createdAt,
     date = "", dateStr = "", 
-    start = "", end = "", startStr = "", endStr = ""
+    start = "", end = "", startStr = "", endStr = "",
+    bgColor, borderColor
   }: EventObjType) => {
     if (auth.currentUser) {
       const docRef = doc(db, "user", auth.currentUser.uid, "schedules", id as string);
@@ -19,7 +20,9 @@ export const useAddSchedules = () => {
         title,
         desc,
         allDay,
-        createdAt
+        createdAt,
+        bgColor,
+        borderColor
       }
       if (date && dateStr) {
         data.date = date;
