@@ -17,7 +17,6 @@ export const useGetUserSchedules = () => {
         documents.push({
           id: document.id,
           title: document.title,
-          desc: document.desc,
           allDay: document.allDay,
           createdAt: document.createdAt,
           date: document.date,
@@ -26,12 +25,14 @@ export const useGetUserSchedules = () => {
           end: document.end,
           startStr: document.startStr,
           endStr: document.endStr,
-          bgColor: document.bgColor,
-          borderColor: document.borderColor,
+          extendedProps: {
+            desc: document.extendedProps.desc,
+            backgroundColor: document.extendedProps.backgroundColor,
+            borderColor: document.extendedProps.borderColor,
+          }
         });
       });
       setSchedules(documents);
-      
     });
     return () => unsubscribe();
   }, []);

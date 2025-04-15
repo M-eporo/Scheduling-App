@@ -1,12 +1,12 @@
 import styles from "../styles/schedulesModal.module.css";
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { deleteDoc, doc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import Button from "./Button";
 import { useAddSchedules } from "../hooks/useAddSchedule";
 import { dateFormatter } from "../utils/dateFormatter";
 import { isSameDate } from "../utils/isSameDate";
-import { ColorOptionType, EventType } from "../types";
+import { EventObjType, EventType } from "../types";
 import SelectColor from "./SelectColor";
 
 type Props = {
@@ -18,12 +18,11 @@ const SchedulesModal = (({
   setIsSchedulesModalShow,
   data
 }: Props) => {
-
+  console.log(data);
   const addSchedules = useAddSchedules();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<EventObjType>({
     id: data[0].id,
     title: data[0].title,
-    desc: data[0].desc,
     allDay: data[0].allDay,
     createdAt: data[0].createdAt,
     date: data[0].date,
@@ -32,32 +31,29 @@ const SchedulesModal = (({
     end: data[0].end,
     startStr: data[0].startStr,
     endStr: data[0].endStr,
-    bgColor: data[0].bgColor,
-    borderColor: data[0].borderColor,
+    extendedProps: {
+      desc: data[0].extendedProps.desc,
+      backgroundColor: data[0].extendedProps.backgroundColor,
+      borderColor: data[0].extendedProps.borderColor,
+    }
   });
 
-  const [color, setColor] = useState<ColorOptionType>({
-      value: "#3788D8",
-      label: "トマト",
-      style: "tomato",
-  });
-  useEffect(() => {
-    setForm({
-      ...form,
-      bgColor: color.value,
-      borderColor: color.value,
-    });
-  }, [color]);
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
   };
-  
+  const handleNestChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setForm({
+      ...form,
+      extendedProps: {
+        ...form.extendedProps,
+        [e.target.name]: e.target.value
+      }
+    });
+  };
+console.log(form);
   //イベント情報の更新
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -68,17 +64,16 @@ const SchedulesModal = (({
         addSchedules({
           id: data[0].id,
           title: form.title ? form.title : data[0].title,
-          desc: form.desc ? form.desc : data[0].desc,
           allDay: data[0].allDay,
-          createdAt: data[0].createdAt as string,
+          createdAt: data[0].createdAt,
           date: data[0].date,
           dateStr: data[0].dateStr,
           start: data[0].start,
           end: data[0].end,
           startStr: data[0].startStr,
           endStr: data[0].endStr,
-          bgColor: form.bgColor,
-          borderColor: form.borderColor,
+          extendedProps: form.extendedProps
+          
         });
       } else return;
     } else {
@@ -136,11 +131,11 @@ const SchedulesModal = (({
             className={styles.textarea}
             name="desc"
             id="desc"
-            value={form.desc}
-            onChange={handleChange}
+            value={form.extendedProps.desc}
+            onChange={handleNestChange}
           ></textarea>
-          <label htmlFor="color">ラベルの色
-            <SelectColor setColor={setColor} />
+          <label>ラベルの色
+            <SelectColor form={form} setForm={setForm} />
           </label>
           <div className={styles.btnContainer}>
             <Button

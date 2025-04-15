@@ -10,6 +10,8 @@ export const createTooltipHtml = ({
     isAllDay: string;
     start: string;
     end: string;
+    color: string;
+    border: string;
 }): string => {
   return `
     <div>

@@ -1,59 +1,39 @@
 import styles from "../styles/scheduleRegister.module.css";
-import { DateClickArg } from '@fullcalendar/interaction/index.js';
-import { DateSelectArg } from "@fullcalendar/core";
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from "uuid";
 import Button from "./Button";
-import { ColorOptionType, EventObjType } from "../types";
+import { EventObjType } from "../types";
 import { useAddSchedules } from "../hooks/useAddSchedule";
 import { isSameDate } from "../utils/isSameDate";
 import { dateFormatter } from "../utils/dateFormatter";
 import SelectColor from "./SelectColor";
 type Props = {
   setIsShow: Dispatch<SetStateAction<boolean>>;
-  data: DateClickArg | DateSelectArg | null;
+  data: {
+    allDay: boolean;
+    date: Date;
+    dateStr: string;
+  }
 };
 
-const ScheduleRegister = ({setIsShow, data }: Props) => {
+const ScheduleRegister = ({ setIsShow, data }: Props) => {
   const addSchedule = useAddSchedules();
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
-  // if (inputRef.current) {
-  //   inputRef.current.focus();
-  // }
+
   const [form, setForm] = useState<EventObjType>({
     id: "",
     title: "",
-    desc: "",
     allDay: data?.allDay,
     createdAt: new Date().toISOString(),
-    bgColor: "#3788D8",
-    borderColor: "#3788D8",
-  });
-
-  const [color, setColor] = useState<ColorOptionType>({
-    value: "#3788D8",
-    label: "トマト",
-    style: "tomato",
-  });
-  useEffect(() => {
-    if (data === null) return;
-    if ("dateStr" in data) {
-      setForm({
-        ...form,
-        date: data.date.toISOString(),
-        dateStr: data.dateStr
-      });
-    } else if ("startStr" in data && "endStr" in data) {
-      setForm({
-        ...form,
-        start: data.start.toISOString(),
-        startStr: data.startStr,
-        end: data.end.toISOString(),
-        endStr: data.endStr
-      });
+    date: data.date.toISOString(),
+    dateStr: data.dateStr,
+    extendedProps: {
+      desc: "",
+      backgroundColor: "#3788D8",
+      borderColor: "#3788D8",
     }
-  }, [data, form]);
+  });
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
@@ -69,21 +49,21 @@ const ScheduleRegister = ({setIsShow, data }: Props) => {
     };
   }, [setIsShow]);
 
-  useEffect(() => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
-      bgColor: color.value,
-      borderColor: color.value,
-    });
-  }, [color]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
-
+  const handleNestChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setForm({
+      ...form,
+      extendedProps: {
+        ...form.extendedProps,
+        [e.target.name]: e.target.value
+      }
+    });
+  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.title) {
@@ -93,7 +73,6 @@ const ScheduleRegister = ({setIsShow, data }: Props) => {
     addSchedule({
       id: uuidv4(),
       title: form.title,
-      desc: form.desc,
       allDay: form.allDay,
       createdAt: form.createdAt,
       date: form.date,
@@ -102,8 +81,7 @@ const ScheduleRegister = ({setIsShow, data }: Props) => {
       end: form.end,
       startStr: form.startStr,
       endStr: form.endStr,
-      bgColor: form.bgColor,
-      borderColor: form.borderColor,
+      extendedProps: form.extendedProps
     });
     setIsShow(false);
   };
@@ -143,11 +121,11 @@ const ScheduleRegister = ({setIsShow, data }: Props) => {
           className={styles.textarea}
           name="desc"
           id="desc"
-          value={form.desc}
-          onChange={handleChange}
+          value={form.extendedProps.desc}
+          onChange={handleNestChange}
         ></textarea>
         <label htmlFor="color">ラベルの色
-          <SelectColor setColor={setColor} />
+          <SelectColor form={form} setForm={setForm} />
         </label>
         <div className={styles.btnContainer}>
           <Button

@@ -8,21 +8,20 @@ export const useAddSchedules = () => {
   const dispatch = useAppDispatch();
 
   const addSchedule = async ({
-    id, title, desc = "", allDay = true, createdAt,
+    id, title, allDay = true, createdAt,
     date = "", dateStr = "", 
     start = "", end = "", startStr = "", endStr = "",
-    bgColor, borderColor
+    extendedProps
   }: EventObjType) => {
     if (auth.currentUser) {
+      console.log(dateStr);
       const docRef = doc(db, "user", auth.currentUser.uid, "schedules", id as string);
       const data: EventObjType = {
         id,
         title,
-        desc,
         allDay,
         createdAt,
-        bgColor,
-        borderColor
+        extendedProps
       }
       if (date && dateStr) {
         data.date = date;

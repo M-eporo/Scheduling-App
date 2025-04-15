@@ -26,7 +26,6 @@ import type {
 } from "../types";
 
 const MyFullCalendar = () => {
-  
   const [events, setEvents] = useState<AllEventType>([]);
   const [holidayEvents, setHolidayEvents] = useState<InitialEventType>([]);
   const [storedSchedules, setStoredSchedules] = useState<InitialEventType>([]);
@@ -37,7 +36,11 @@ const MyFullCalendar = () => {
 
   //ScheduleRegisterの表示
   const [isSchedulesRegisterShow, setIsSchedulesRegisterShow] = useState(false);
-  const [schedulesRegisterData, setSchedulesRegisterData] = useState<DateClickArg | DateSelectArg | null>(null);
+  const [clickData, setClickData] = useState({
+    allDay: true,
+    date: new Date(),
+    dateStr: "",
+  });
 
   const user = useAppSelector((state) => state.user.user);
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
@@ -117,12 +120,18 @@ const MyFullCalendar = () => {
   const handleClick = (info: DateClickArg) => {
     info.jsEvent.preventDefault();
     setIsSchedulesRegisterShow(true);
-    setSchedulesRegisterData(info);
+    setClickData({
+      allDay: info.allDay,
+      date: info.date,
+      dateStr: info.dateStr
+    });
+    console.log(info);
   };
 
   const handleSelect = (info: DateSelectArg) => {
     setIsSchedulesRegisterShow(true);
-    setSchedulesRegisterData(info);
+    
+    console.log(info);
   }; 
 
   const handleEventClick = (info: EventClickArg) => {
@@ -140,12 +149,18 @@ const MyFullCalendar = () => {
     const isAllDay = info.event.allDay ? "(終日)" : "";
     const start = timeGetter(info.event.startStr) ? timeGetter(info.event.startStr) : "";
     const end = timeGetter(info.event.endStr) ? timeGetter(info.event.endStr) : "";
+    const color = info.event.extendedProps.backgroundColor;
+    const border = info.event.extendedProps.borderColor;
     const safeHtml = createTooltipHtml({
       title,
       isAllDay,
       start,
-      end
+      end,
+      color,
+      border
     });
+    info.el.style.backgroundColor = color;
+    info.el.style.borderColor = border;
     info.el.setAttribute('data-tooltip-id', 'event-tooltip');
     info.el.setAttribute('data-tooltip-html', safeHtml);
   };
@@ -191,6 +206,7 @@ const MyFullCalendar = () => {
             select={handleSelect}
             eventClick={handleEventClick}
             eventDidMount={handleEventDidMount}
+            
           />
           <ReactTooltip
             id="event-tooltip"
@@ -230,7 +246,7 @@ const MyFullCalendar = () => {
           {isSchedulesRegisterShow && 
             <ScheduleRegister
               setIsShow={setIsSchedulesRegisterShow}
-              data={schedulesRegisterData}
+              data={clickData}
             />
           }
         </div>
