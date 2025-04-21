@@ -18,7 +18,6 @@ const SchedulesModal = (({
   setIsSchedulesModalShow,
   data
 }: Props) => {
-  console.log(data);
   const addSchedules = useAddSchedules();
   const [form, setForm] = useState<EventObjType>({
     id: data[0].id,
@@ -53,7 +52,6 @@ const SchedulesModal = (({
       }
     });
   };
-console.log(form);
   //イベント情報の更新
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

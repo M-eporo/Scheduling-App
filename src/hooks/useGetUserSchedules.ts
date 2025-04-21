@@ -18,7 +18,9 @@ export const useGetUserSchedules = () => {
           id: document.id,
           title: document.title,
           allDay: document.allDay,
-          createdAt: document.createdAt,
+          createdAt: typeof document.createdAt?.toDate === "function"
+            ? document.createdAt.toDate()
+            : document.createdAt,
           date: document.date,
           dateStr: document.dateStr,
           start: document.start,

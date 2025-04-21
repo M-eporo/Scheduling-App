@@ -1,4 +1,4 @@
-import styles from "../styles/scheduleRegister.module.css";
+import styles from "../styles/selectScheduleRegister.module.css";
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from "uuid";
 import Button from "./Button";
@@ -9,14 +9,16 @@ import { dateFormatter } from "../utils/dateFormatter";
 import SelectColor from "./SelectColor";
 type Props = {
   setIsShow: Dispatch<SetStateAction<boolean>>;
-  clickData: {
-    allDay: boolean;
-    date: Date;
-    dateStr: string;
+  selectData: {
+    allDay: boolean,
+    start: Date,
+    startStr: string,
+    end: Date,
+    endStr: string,
   }
 };
 
-const ScheduleRegister = ({ setIsShow, clickData }: Props) => {
+const SelectScheduleRegister = ({ setIsShow, selectData }: Props) => {
   const addSchedule = useAddSchedules();
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -24,10 +26,12 @@ const ScheduleRegister = ({ setIsShow, clickData }: Props) => {
   const [form, setForm] = useState<EventObjType>({
     id: "",
     title: "",
-    allDay: clickData?.allDay,
+    allDay: selectData?.allDay,
     createdAt: new Date(),
-    date: clickData.date.toISOString(),
-    dateStr: clickData.dateStr,
+    start: selectData.start.toISOString(),
+    startStr: selectData.startStr,
+    end: selectData.end.toISOString(),
+    endStr: selectData.endStr, 
     extendedProps: {
       desc: "",
       backgroundColor: "#3788D8",
@@ -64,6 +68,7 @@ const ScheduleRegister = ({ setIsShow, clickData }: Props) => {
       }
     });
   };
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.title) {
@@ -147,4 +152,4 @@ const ScheduleRegister = ({ setIsShow, clickData }: Props) => {
   );
 };
 
-export default ScheduleRegister;
+export default SelectScheduleRegister;

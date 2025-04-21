@@ -10,6 +10,7 @@ import { ErrorFallback } from "./utils/ErrorFallback";
 import { emailLogin, emailLogout } from "./features/emailUserSlice";
 import { useGetUserInfo } from "./hooks/useGetUserInfo";
 import { doc, setDoc } from "firebase/firestore";
+import Footer from "./component/Footer";
 
 const App = () => {
   const dispatch = useAppDispatch();
@@ -52,11 +53,15 @@ const App = () => {
       <ErrorBoundary FallbackComponent={ErrorFallback}>
       {user || emailUser
         ? 
-          <>
-            <MyFullCalendar />   
-          </>
+          <div>
+            <MyFullCalendar />
+            <Footer />
+          </div>
         :
-          <Login />  
+          <div>
+            <Login />
+            <Footer/>  
+          </div>
       }
       </ErrorBoundary>
     </>

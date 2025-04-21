@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface InitialUserState {
   user: null | {
     uid: string;
@@ -23,9 +25,8 @@ export type InitialSchedulesStateType = {
 export type ScheduleType = {
   id?: string;
   title: string;
-  
   allDay: boolean;
-  createdAt: string;
+  createdAt?: Date | Timestamp | string;
   date?: string;
   dateStr?: string;
   start?: string;
@@ -44,7 +45,7 @@ export type InitialEventType = {
   title: string;
   date?: string;
   allDay?: boolean;
-  createdAt?: string;
+  createdAt?: Date | Timestamp | string;
   dateStr?: string;
   start?: string;
   end?: string;
@@ -71,7 +72,7 @@ export type EventType = {
   id?: string;
   title: string;
   allDay?: boolean;
-  createdAt: string;
+  createdAt?: Date | Timestamp | string;
   date?: string;
   dateStr?: string;
   start?: string;
@@ -89,7 +90,7 @@ export type EventObjType = {
   id?: string;
   title: string;
   allDay?: boolean;
-  createdAt: string;
+  createdAt?: Date | Timestamp | string;
   date?: string;
   dateStr?: string;
   start?: string;
@@ -108,7 +109,7 @@ export type AllEventType = {
   title: string;
   date?: string;
   allDay?: boolean;
-  createdAt?: string;
+  createdAt?: Date | Timestamp | string;
   dateStr?: string;
   start?: string;
   end?: string;

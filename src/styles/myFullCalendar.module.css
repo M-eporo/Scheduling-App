@@ -1,0 +1,7 @@
+.flex {
+  composes: flex-row from "./utils.module.css";
+}
+.container {
+  position: relative;
+  width: 85vw;
+}

@@ -6,7 +6,7 @@ import GoogleIcon from '@mui/icons-material/Google';
 import Input from "./Input";
 import Container from "./Container";
 import Button from "./Button";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import NewAccountForm from "./NewAccountForm";
 
 const Login = () => {
@@ -27,7 +27,7 @@ const Login = () => {
         name: user.user.displayName,
         photoURL: user.user.photoURL,
         email: user.user.email,
-        createdAt: new Date().toISOString()
+        createdAt: serverTimestamp()
       }, { merge: true});
     } catch (err) {
       console.error(err);
@@ -42,7 +42,6 @@ const Login = () => {
         alert("メールアドレスが未確認です。")
         auth.signOut();
       }
-      console.log(result);
     } catch (err) {
       console.error(err);
       alert("ログインに失敗しました。");
@@ -53,7 +52,6 @@ const Login = () => {
   const googleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log(result);
       if (result.user) {
         await saveUserToFirestore(result);
       }

@@ -1,0 +1,12 @@
+.footer {
+  display: grid;
+  place-items: center;
+  width: 100dvw;
+  height: 5dvh;
+  padding: 0.5em 0;
+}
+.copyRight {
+  color: var(--main-color);
+  font-size: 12px;
+}
+

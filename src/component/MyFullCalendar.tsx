@@ -1,11 +1,12 @@
+import styles from "../styles/myFullCalendar.module.css";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullCalendar/daygrid";
 import listPlugin from '@fullcalendar/list';
 import multiMonthPlugin from '@fullcalendar/multimonth'
 import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { DateSelectArg, EventClickArg, EventMountArg } from "@fullcalendar/core";
-import { useEffect, useState } from "react";
+import { CalendarApi, DateSelectArg, EventClickArg, EventMountArg } from "@fullcalendar/core";
+import { useEffect, useRef, useState } from "react";
 import {Tooltip as ReactTooltip} from "react-tooltip";
 import { auth } from "../firebase";
 import Button from "./Button";
@@ -24,8 +25,11 @@ import type {
   EventType,
   InitialEventType
 } from "../types";
+import SelectScheduleRegister from "./SelectScheduleRegister";
+import MenuDrawer from "./MenuDrawer";
 
 const MyFullCalendar = () => {
+  const calendarRef = useRef<CalendarApi | null>(null);
   const [events, setEvents] = useState<AllEventType>([]);
   const [holidayEvents, setHolidayEvents] = useState<InitialEventType>([]);
   const [storedSchedules, setStoredSchedules] = useState<InitialEventType>([]);
@@ -34,7 +38,7 @@ const MyFullCalendar = () => {
   const [isSchedulesModalShow, setIsSchedulesModalShow] = useState(false);
   const [schedulesModalData, setSchedulesModalData] = useState<EventType>([]);
 
-  //ScheduleRegisterの表示
+  //handleClick用 ScheduleRegisterの表示
   const [isSchedulesRegisterShow, setIsSchedulesRegisterShow] = useState(false);
   const [clickData, setClickData] = useState({
     allDay: true,
@@ -42,12 +46,22 @@ const MyFullCalendar = () => {
     dateStr: "",
   });
 
+  //handleSelect用
+  const [isSelectSchedulesRegisterShow, setIsSelectSchedulesRegisterShow] = useState(false);
+  const [selectData, setSelectData] = useState({
+    allDay: true,
+    start: new Date(),
+    startStr: "",
+    end: new Date(),
+    endStr: "",
+  });
+
   const user = useAppSelector((state) => state.user.user);
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
   const schedules = useAppSelector((state) => state.schedules.schedules);
   const dispatch = useAppDispatch();
-
   //初回レンダリング時
+  console.log(emailUser);
   useEffect(() => {
     //祝日のデータを取得
     const getHolidays = async () => {
@@ -57,41 +71,13 @@ const MyFullCalendar = () => {
     getHolidays();
     
   }, []);
+
   //Firestoreに保存されているスケジュールデータを取得
   //onSnapShotによる自動更新
   const userSchedules = useGetUserSchedules();
   useEffect(() => {
     setStoredSchedules(userSchedules);
   }, [userSchedules]);
-  // useEffect(() => {
-  //   if (auth.currentUser) {
-  //     const getStoredSchedules = async () => {
-  //       const storedSchedules = await getUserSchedules();
-  //       if (storedSchedules) {
-  //         setStoredSchedules(storedSchedules);
-  //       }
-  //     };
-  //     getStoredSchedules();
-  //   }
-  // }, []);
-  
-  //初期イベント情報の設定
-  //祝日とFirestoreに保存されてデータ
-  //InitialEventsの設定に使用
-  // useEffect(() => {
-  //   setInitialEvents([
-  //     ...holidayEvents,
-  //     ...storedSchedules
-  //   ]);
-  // }, [holidayEvents, storedSchedules]);
-  // //全てのイベントをセット
-  // useEffect(() => {
-  //   setAllEvents([
-  //     ...initialEvents,
-  //     ...clickEvents,
-  //     ...selectEvents
-  //   ]);
-  // }, [initialEvents, clickEvents, selectEvents]);
   useEffect(() => {
     setEvents([
       ...holidayEvents,
@@ -100,8 +86,14 @@ const MyFullCalendar = () => {
   }, [holidayEvents, storedSchedules]);
   //全てのイベントが取得出来たら、Reduxを更新
   useEffect(() => {
-    dispatch(setSchedulesReducer(events));
-  }, [events, dispatch]);
+  const serializableEvents = events.map(event => ({
+    ...event,
+    createdAt: event.createdAt instanceof Date
+      ? event.createdAt.toISOString()
+      : event.createdAt
+  }));
+  dispatch(setSchedulesReducer(serializableEvents));
+}, [events, dispatch]);
 
   const getDayClassName = (date: Date) => {
     const day: number = date.getDay();
@@ -125,13 +117,17 @@ const MyFullCalendar = () => {
       date: info.date,
       dateStr: info.dateStr
     });
-    console.log(info);
   };
-
+  
   const handleSelect = (info: DateSelectArg) => {
-    setIsSchedulesRegisterShow(true);
-    
-    console.log(info);
+    setIsSelectSchedulesRegisterShow(true);
+    setSelectData({
+      allDay: info.allDay,
+      start: info.start,
+      startStr: info.startStr,
+      end: info.end,
+      endStr: info.endStr,
+    })
   }; 
 
   const handleEventClick = (info: EventClickArg) => {
@@ -169,11 +165,23 @@ const MyFullCalendar = () => {
   //週：timeGridWeek
   //月：dayGridMonth
   //年：multiMonthYear
+
+  const handleChangeView = (view: string) => {
+    if (calendarRef) {
+      calendarRef.current?.changeView(view);
+    }
+  };
   return (
-    <>
-      {user?.emailVerified || emailUser?.emailVerified ? (
-        <div style={{ position: "relative" }}>
+    <div className={styles.flex}>
+      <MenuDrawer handleChangeView={handleChangeView} />
+      {user?.emailVerified || emailUser?.emailVerified ? (  
+        <div className={styles.container}>
           <FullCalendar
+            ref={(el) => {
+              if (el) {
+                calendarRef.current = el.getApi();
+              }
+            }}
             locale="jaLocale"
             headerToolbar={{
               left: "prevYear, prev, today, next, nextYear",
@@ -246,7 +254,13 @@ const MyFullCalendar = () => {
           {isSchedulesRegisterShow && 
             <ScheduleRegister
               setIsShow={setIsSchedulesRegisterShow}
-              data={clickData}
+              clickData={clickData}
+            />
+          }
+          {isSelectSchedulesRegisterShow &&
+            <SelectScheduleRegister
+            setIsShow={setIsSelectSchedulesRegisterShow}
+            selectData={selectData} 
             />
           }
         </div>
@@ -254,7 +268,7 @@ const MyFullCalendar = () => {
       ) : (
         <EmailVerifying />
       )}
-    </>
+    </div>
   );
 };
 

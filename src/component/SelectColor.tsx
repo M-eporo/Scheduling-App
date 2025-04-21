@@ -20,6 +20,7 @@ const SelectColor = ({ form, setForm }: Props) => {
     setForm({
       ...form,
       extendedProps: {
+        desc: form.extendedProps.desc,
         backgroundColor: option.value,
         borderColor: option.value
       } 

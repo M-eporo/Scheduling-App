@@ -4,7 +4,7 @@ import Input from "./Input";
 import Button from "./Button";
 import { createUserWithEmailAndPassword, sendEmailVerification, UserCredential } from "firebase/auth";
 import { auth, db } from "../firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 
 type FormType = {
   name: string;
@@ -37,7 +37,7 @@ const NewAccountForm = ({ setIsShow }: Props) => {
         displayName: form.displayName,
         email: form.email,
         emailVerified: user.user.emailVerified,
-        createdAt: new Date().toISOString(),
+        createdAt: serverTimestamp(),
       }, { merge: true });
     } catch (err) {
       console.log(err);
@@ -48,7 +48,6 @@ const NewAccountForm = ({ setIsShow }: Props) => {
     e.preventDefault();
     try {
       const result = await createUserWithEmailAndPassword(auth, form.email, form.password);
-      console.log(result);
       if (result.user) {
         await sendEmailVerification(result.user);
         saveUserToFireStore(result);
