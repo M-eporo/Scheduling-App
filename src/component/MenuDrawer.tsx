@@ -7,6 +7,8 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { drawerMenu } from "../utils/drawerMenu";
 import { useAppSelector } from "../app/hooks";
 import UserIcon from "./UserIcon";
+import UserInfoModal from "./UserInfoModal";
+import { UserType } from "../types";
 
 type Props = {
   handleChangeView: (view: string) => void;
@@ -15,8 +17,9 @@ type Props = {
 const MenuDrawer = ({handleChangeView}: Props) => {
   const [show, setShow] = useState(false);
   const toggleDraw = () => setShow(!show);
-  const user = useAppSelector((state) => state.user.user);
+  const googleUser = useAppSelector((state) => state.user.user);
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
+  const user: UserType = googleUser ? googleUser : emailUser;
   const menu = drawerMenu(handleChangeView)
   
   return (
@@ -30,7 +33,7 @@ const MenuDrawer = ({handleChangeView}: Props) => {
               ? 
               <UserIcon userName={emailUser.displayName} />
               :
-              <img src={user?.photo} alt="ユーザーアイコン" />
+              <img src={googleUser?.photo} alt="ユーザーアイコン" />
             }
             </div>
             <Divider />
@@ -38,10 +41,19 @@ const MenuDrawer = ({handleChangeView}: Props) => {
               const Icon = obj.icon;
               return (
                 <ListItem key={obj.title}>
+                  {obj.title === "ユーザー情報"
+                    ? 
+                  <>
+                    <ListItemIcon><Icon /></ListItemIcon>
+                    <ListItemText primary={obj.title} />
+                    <UserInfoModal user={user} />
+                  </>
+                    :
                   <ListItemButton onClick={obj.onClick}>
                     <ListItemIcon><Icon /></ListItemIcon>
-                    <ListItemText primary={obj.title}/>
+                    <ListItemText primary={obj.title} />
                   </ListItemButton>
+                 }          
                 </ListItem>
               );
             })}

@@ -56,7 +56,7 @@ const MyFullCalendar = () => {
     endStr: "",
   });
 
-  const user = useAppSelector((state) => state.user.user);
+  const user = useAppSelector((state) => state?.user.user);
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
   const schedules = useAppSelector((state) => state.schedules.schedules);
   const dispatch = useAppDispatch();

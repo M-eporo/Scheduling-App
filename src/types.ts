@@ -1,5 +1,12 @@
 import { Timestamp } from "firebase/firestore";
-
+export type UserType = {
+  uid: string;
+  displayName: string;
+  email: string;
+  emailVerified: boolean;
+  name?: string;
+  photo?: string;
+} | null;
 export interface InitialUserState {
   user: null | {
     uid: string;

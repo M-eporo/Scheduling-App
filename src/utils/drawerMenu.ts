@@ -9,8 +9,8 @@ import { auth } from '../firebase';
 export const drawerMenu = ((handleChangeView: (view: string) => void) => [
   { title: "ユーザー情報", icon: ManageAccountsOutlinedIcon, },
   { title: "ログアウト", icon: LogoutOutlinedIcon, onClick: () => auth.signOut() },
-  { title: "day", icon: CalendarViewDayOutlinedIcon, onClick: () => handleChangeView("timeGridDay")},
-  { title: "week", icon: CalendarViewWeekOutlinedIcon, onClick: () => handleChangeView("timeGridWeek") },
-  { title: "month", icon: CalendarViewMonthOutlinedIcon, onClick: () => handleChangeView("dayGridMonth") },
-  { title: "year", icon: CalendarMonthOutlinedIcon, onClick: () => handleChangeView("multiMonthYear") }
+  { title: "日", icon: CalendarViewDayOutlinedIcon, onClick: () => handleChangeView("timeGridDay")},
+  { title: "週", icon: CalendarViewWeekOutlinedIcon, onClick: () => handleChangeView("timeGridWeek") },
+  { title: "月", icon: CalendarViewMonthOutlinedIcon, onClick: () => handleChangeView("dayGridMonth") },
+  { title: "年", icon: CalendarMonthOutlinedIcon, onClick: () => handleChangeView("multiMonthYear") }
 ]);
