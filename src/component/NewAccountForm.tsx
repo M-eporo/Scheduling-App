@@ -54,7 +54,6 @@ const NewAccountForm = ({ setIsShow }: Props) => {
         alert("メールアドレス認証用のメールを送信しました。");
       }
     } catch (err) {
-      console.log(err);
       alert("アカウント作成に失敗しました。");
     }
   };

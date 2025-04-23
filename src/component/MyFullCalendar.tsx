@@ -55,13 +55,11 @@ const MyFullCalendar = () => {
     end: new Date(),
     endStr: "",
   });
-
   const user = useAppSelector((state) => state?.user.user);
   const emailUser = useAppSelector((state) => state.emailUser.emailUser);
   const schedules = useAppSelector((state) => state.schedules.schedules);
   const dispatch = useAppDispatch();
   //初回レンダリング時
-  console.log(emailUser);
   useEffect(() => {
     //祝日のデータを取得
     const getHolidays = async () => {

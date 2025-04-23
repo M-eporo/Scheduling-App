@@ -2,37 +2,23 @@ import styles from "../styles/userInfoModal.module.css";
 import { Box, Button, Divider, IconButton, Modal, TextField, Typography } from "@mui/material";
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined';
 import { useState } from "react";
-import { deleteDoc, doc, setDoc } from "firebase/firestore";
-import { auth, db } from "../firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../firebase";
 import { UserType } from "../types";
+import AlertDialog from "./AlertDialog";
 
-// type Props = {
-//   guser: {
-//     uid: string;
-//     photo: string;
-//     email: string;
-//     displayName: string;
-//     emailVerified: boolean;
-//   } | null
-//   euser: {
-//     uid: string;
-//     name: string;
-//     displayName: string;
-//     email: string;
-//     emailVerified: boolean;
-//   } | null
-// };
 type Props = {
   user: UserType;
 }
 
-// const UserInfoModal = ({euser, guser}: Props) => {
-const UserInfoModal = ({user}: Props ) => {
+const UserInfoModal = ({ user }: Props) => {
+  //UserInfoModal表示用のStateとHandler
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  // const user = euser ? euser : guser;
 
+  //アカウント削除ボタン押下
+  const [dialogShow, setDialogShow] = useState(false);
   const [form, setForm] = useState({
     displayName: user?.displayName,
   });
@@ -56,20 +42,6 @@ const UserInfoModal = ({user}: Props ) => {
     }
     setOpen(false);
   };
-
-  const handleDelete = async () => {
-    if (user) {
-      try {
-        await auth.currentUser?.delete();
-        await deleteDoc(doc(db, "user", user.uid));
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    
-    
-      
-  }
   
   return (
     <div>
@@ -147,10 +119,11 @@ const UserInfoModal = ({user}: Props ) => {
             color="warning"
             size="small"
             sx={{ marginTop: "16px" }}
-            onClick={handleDelete}
+            onClick={() => setDialogShow(true)}
           >
             アカウント削除
           </Button>
+          {dialogShow && <AlertDialog open={dialogShow} setOpen={setDialogShow} />}
         </Box>
       </Modal>
     </div>
