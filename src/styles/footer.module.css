@@ -1,9 +1,9 @@
 .footer {
   display: grid;
   place-items: center;
-  width: 100dvw;
-  height: 5dvh;
+  height: calc(5vh);
   padding: 0.5em 0;
+  box-sizing: border-box;
 }
 .copyRight {
   color: var(--main-color);

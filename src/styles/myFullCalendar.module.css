@@ -1,7 +1,8 @@
 .flex {
   composes: flex-row from "./utils.module.css";
 }
-.container {
+
+.calendarContainer {
   position: relative;
-  width: 85vw;
+  padding: 0 1em;
 }

@@ -130,7 +130,8 @@ export type AllEventType = {
 }[];
 
 export type ColorOptionType = {
-  value: string;
+  backgroundColor: string;
+  borderColor: string;
   label: string;
   style: string;
 };

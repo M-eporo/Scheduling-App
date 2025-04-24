@@ -133,7 +133,7 @@ const AlertDialog = ({ open, setOpen }: Props) => {
       {/* 完了メッセージ */}
       <Snackbar
         open={seccessMsg}
-        autoHideDuration={3000}
+        autoHideDuration={4000}
         message="アカウント削除が完了しました"
         onClose={() => setSuccessMsg(false)}
       />

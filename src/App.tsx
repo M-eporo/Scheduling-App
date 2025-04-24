@@ -53,7 +53,7 @@ const App = () => {
       <ErrorBoundary FallbackComponent={ErrorFallback}>
       {user || emailUser
         ? 
-          <div>
+          <div style={{position: "relative"}}>
             <MyFullCalendar />
             <Footer />
           </div>

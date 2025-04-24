@@ -14,9 +14,11 @@ type Props = {
     date: Date;
     dateStr: string;
   }
+  setSuccessMsg: Dispatch<SetStateAction<boolean>>;
+  setFailMsg: Dispatch<SetStateAction<boolean>>;
 };
 
-const ScheduleRegister = ({ setIsShow, clickData }: Props) => {
+const ScheduleRegister = ({ setIsShow, clickData, setSuccessMsg, setFailMsg }: Props) => {
   const addSchedule = useAddSchedules();
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -70,7 +72,8 @@ const ScheduleRegister = ({ setIsShow, clickData }: Props) => {
       alert("タイトルが入力されていません。");
       return;
     }
-    addSchedule({
+    try {
+      addSchedule({
       id: uuidv4(),
       title: form.title,
       allDay: form.allDay,
@@ -83,7 +86,11 @@ const ScheduleRegister = ({ setIsShow, clickData }: Props) => {
       endStr: form.endStr,
       extendedProps: form.extendedProps
     });
+    } catch (err) {
+      setFailMsg(false);
+    }
     setIsShow(false);
+    setSuccessMsg(true);
   };
 
   return (

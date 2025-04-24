@@ -9,7 +9,6 @@ import { CalendarApi, DateSelectArg, EventClickArg, EventMountArg } from "@fullc
 import { useEffect, useRef, useState } from "react";
 import {Tooltip as ReactTooltip} from "react-tooltip";
 import { auth } from "../firebase";
-import Button from "./Button";
 import EmailVerifying from "./EmailVerifying";
 import SchedulesModal from "./SchedulesModal";
 import ScheduleRegister from "./ScheduleRegister";
@@ -27,6 +26,7 @@ import type {
 } from "../types";
 import SelectScheduleRegister from "./SelectScheduleRegister";
 import MenuDrawer from "./MenuDrawer";
+import { Snackbar } from "@mui/material";
 
 const MyFullCalendar = () => {
   const calendarRef = useRef<CalendarApi | null>(null);
@@ -37,6 +37,10 @@ const MyFullCalendar = () => {
   //Modalの表示
   const [isSchedulesModalShow, setIsSchedulesModalShow] = useState(false);
   const [schedulesModalData, setSchedulesModalData] = useState<EventType>([]);
+  //Snackbarの表示
+  const [successMsg, setSuccessMsg] = useState(false);
+  const [failMsg, setFailMsg] = useState(false);
+  const [deleteScheduleMsg, setDeleteScheduleMsg] = useState(false);
 
   //handleClick用 ScheduleRegisterの表示
   const [isSchedulesRegisterShow, setIsSchedulesRegisterShow] = useState(false);
@@ -92,7 +96,7 @@ const MyFullCalendar = () => {
   }));
   dispatch(setSchedulesReducer(serializableEvents));
 }, [events, dispatch]);
-
+console.log(userSchedules);
   const getDayClassName = (date: Date) => {
     const day: number = date.getDay();
     const formattedDate = date.toLocaleDateString("ja-JP", {
@@ -106,7 +110,6 @@ const MyFullCalendar = () => {
     if (day === 6) classNames.push("saturday");
     return classNames;
   };
-  
   const handleClick = (info: DateClickArg) => {
     info.jsEvent.preventDefault();
     setIsSchedulesRegisterShow(true);
@@ -127,8 +130,7 @@ const MyFullCalendar = () => {
       endStr: info.endStr,
     })
   }; 
-
-  const handleEventClick = (info: EventClickArg) => {
+  const handleEventClick = (info: EventClickArg ) => {
     info.jsEvent.preventDefault();
     //clickしてスケジュールの変更、削除
     if (auth.currentUser) {
@@ -158,23 +160,19 @@ const MyFullCalendar = () => {
     info.el.setAttribute('data-tooltip-id', 'event-tooltip');
     info.el.setAttribute('data-tooltip-html', safeHtml);
   };
-  //view.type
-  //日：timeGridDay
-  //週：timeGridWeek
-  //月：dayGridMonth
-  //年：multiMonthYear
-
   const handleChangeView = (view: string) => {
     if (calendarRef) {
       calendarRef.current?.changeView(view);
     }
   };
+  
   return (
-    <div className={styles.flex}>
+    <>
       <MenuDrawer handleChangeView={handleChangeView} />
-      {user?.emailVerified || emailUser?.emailVerified ? (  
-        <div className={styles.container}>
+      {user?.emailVerified || emailUser?.emailVerified ? (
+        <div className={styles.calendarContainer}>
           <FullCalendar
+            key={events.map(e => e.id && e.extendedProps && e.id + e.extendedProps?.backgroundColor).join("-")}
             ref={(el) => {
               if (el) {
                 calendarRef.current = el.getApi();
@@ -186,7 +184,8 @@ const MyFullCalendar = () => {
               center: "title",
               right: "timeGridDay, timeGridWeek, dayGridMonth, multiMonthYear",
             }}
-            height="100vh"
+            
+            height="95vh"
             buttonText={{
               today: "今日",
               day: "日",
@@ -212,7 +211,6 @@ const MyFullCalendar = () => {
             select={handleSelect}
             eventClick={handleEventClick}
             eventDidMount={handleEventDidMount}
-            
           />
           <ReactTooltip
             id="event-tooltip"
@@ -231,28 +229,21 @@ const MyFullCalendar = () => {
               boxShadow: "0 0 5px 2px rgba(0,0,0,0.2)"
             }}
           />
-          <Button
-            styleName="logout"
-            type="button"
-            disabled={false}
-            signOut={async () => {
-              const isConfirmed = confirm("ログアウトしますか?");
-              if (isConfirmed) {
-                await auth.signOut();
-              }
-            }}
-            value="ログアウト"
-          />
           {isSchedulesModalShow &&
             <SchedulesModal
-              setIsSchedulesModalShow={setIsSchedulesModalShow}
-              data={schedulesModalData}
+            setIsSchedulesModalShow={setIsSchedulesModalShow}
+            setSuccessMsg={setSuccessMsg}
+            setDeleteScheduleMsg={setDeleteScheduleMsg}
+            setFailMsg={setFailMsg}
+            data={schedulesModalData}
             />
           }
           {isSchedulesRegisterShow && 
             <ScheduleRegister
               setIsShow={setIsSchedulesRegisterShow}
               clickData={clickData}
+              setSuccessMsg={setSuccessMsg}
+              setFailMsg={setFailMsg}
             />
           }
           {isSelectSchedulesRegisterShow &&
@@ -261,12 +252,36 @@ const MyFullCalendar = () => {
             selectData={selectData} 
             />
           }
+          {successMsg &&
+            <Snackbar
+            open={successMsg}
+            onClose={() => setSuccessMsg(false)}
+            autoHideDuration={4000}
+            message="スケジュールを更新しました。"
+            anchorOrigin={{ vertical: "bottom", horizontal: "right"}}
+          />}
+          {deleteScheduleMsg &&
+            <Snackbar
+            open={deleteScheduleMsg}
+            onClose={() => setDeleteScheduleMsg(false)}
+            autoHideDuration={4000}
+            message="スケジュールを削除しました。"
+            anchorOrigin={{ vertical: "bottom", horizontal: "right"}}
+          />}
+          {failMsg &&
+            <Snackbar
+            open={failMsg}
+            onClose={() => setFailMsg(false)}
+            autoHideDuration={4000}
+            message="処理に失敗しました。もう一度最初から実行して下さい。"
+            anchorOrigin={{ vertical: "bottom", horizontal: "right"}}
+          />}
         </div>
-        
+
       ) : (
         <EmailVerifying />
       )}
-    </div>
+    </>
   );
 };
 

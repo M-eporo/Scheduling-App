@@ -20,21 +20,20 @@ const SelectColor = ({ form, setForm }: Props) => {
     setForm({
       ...form,
       extendedProps: {
-        desc: form.extendedProps.desc,
-        backgroundColor: option.value,
-        borderColor: option.value
-      } 
+        ...form.extendedProps,
+        backgroundColor: option.backgroundColor,
+        borderColor: option.borderColor
+      }
     });
-
+    
     if (circleRef.current && dropdownRef.current) {
-      circleRef.current.style.color = option.value;
+      circleRef.current.style.color = option.backgroundColor;
       if (dropdownRef.current.style.display === "none") {
         dropdownRef.current.style.display = "grid";
       } else {
         dropdownRef.current.style.display = "none";
       }
     }
-    
   };
 
   const listShow = () => {
@@ -64,7 +63,8 @@ const SelectColor = ({ form, setForm }: Props) => {
             colorsOpt.map((option) => (
               <div
                 ref={itemRef}
-                key={option.value}
+                key={option.backgroundColor}
+                
                 className={styles.list}
                 onClick={() => handleSelect(option)}
               >

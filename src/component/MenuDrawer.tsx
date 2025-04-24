@@ -23,9 +23,9 @@ const MenuDrawer = ({handleChangeView}: Props) => {
   const menu = drawerMenu(handleChangeView)
   
   return (
-    <div className={styles.container}>
+    <>
       <Button onClick={toggleDraw}><SettingsOutlinedIcon /></Button>
-      <Drawer anchor="left" open={show} onClose={toggleDraw}>
+      <Drawer anchor="left" open={show} onClose={toggleDraw} >
         <Box sx={{ height: "100vh" }} >
           <List>
             <div className={styles.logoContainer}>
@@ -45,7 +45,7 @@ const MenuDrawer = ({handleChangeView}: Props) => {
                     ? 
                   <>
                     <ListItemIcon><Icon /></ListItemIcon>
-                    <ListItemText primary={obj.title} />
+                      <ListItemText primary={obj.title} />
                     <UserInfoModal user={user} />
                   </>
                     :
@@ -60,7 +60,7 @@ const MenuDrawer = ({handleChangeView}: Props) => {
           </List>
         </Box>
       </Drawer>
-    </div>
+    </>
   );
 };
 

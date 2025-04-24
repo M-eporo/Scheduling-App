@@ -11,12 +11,15 @@ import SelectColor from "./SelectColor";
 
 type Props = {
   setIsSchedulesModalShow: Dispatch<SetStateAction<boolean>>;
+  setSuccessMsg: Dispatch<SetStateAction<boolean>>;
+  setDeleteScheduleMsg: Dispatch<SetStateAction<boolean>>;
+  setFailMsg: Dispatch<SetStateAction<boolean>>;
   data: EventType;
 };
 
 const SchedulesModal = (({
   setIsSchedulesModalShow,
-  data
+  setSuccessMsg, setDeleteScheduleMsg, setFailMsg, data
 }: Props) => {
   const addSchedules = useAddSchedules();
   const [form, setForm] = useState<EventObjType>({
@@ -59,20 +62,24 @@ const SchedulesModal = (({
       if (!data[0].id) return;
       const answer = confirm("スケジュールを更新します。\nよろしいですか?");
       if (answer) {
-        addSchedules({
-          id: data[0].id,
-          title: form.title ? form.title : data[0].title,
-          allDay: data[0].allDay,
-          createdAt: data[0].createdAt,
-          date: data[0].date,
-          dateStr: data[0].dateStr,
-          start: data[0].start,
-          end: data[0].end,
-          startStr: data[0].startStr,
-          endStr: data[0].endStr,
-          extendedProps: form.extendedProps
-          
-        });
+        try {
+          addSchedules({
+            id: data[0].id,
+            title: form.title ? form.title : data[0].title,
+            allDay: data[0].allDay,
+            createdAt: data[0].createdAt,
+            date: data[0].date,
+            dateStr: data[0].dateStr,
+            start: data[0].start,
+            end: data[0].end,
+            startStr: data[0].startStr,
+            endStr: data[0].endStr,
+            extendedProps: form.extendedProps
+          });
+          setSuccessMsg(true);
+        } catch (err) {
+          setFailMsg(true);
+        }
       } else return;
     } else {
       auth.signOut();
@@ -88,6 +95,7 @@ const SchedulesModal = (({
       const answer = confirm("スケジュールを削除します。\nよろしいですか?");
       if (answer) {
         await deleteDoc(docRef);
+        setDeleteScheduleMsg(true);
       } else return;
     } else {
       auth.signOut();
@@ -158,7 +166,6 @@ const SchedulesModal = (({
             />
           </div>
         </form>
-        
       </div>
     </>
   )

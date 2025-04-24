@@ -32,12 +32,8 @@ export const useAddSchedules = () => {
         data.startStr = startStr;
         data.endStr = endStr;
       };
-      try {
-        await setDoc(docRef, {...data, createdAt: serverTimestamp()}, {merge: true});
-        dispatch(addSchedulesReducer({...data, createdAt: new Date().toISOString()}));
-      } catch (err) {
-        console.error("スケジュール追加エラー: ", err);
-      }
+      await setDoc(docRef, {...data, createdAt: serverTimestamp()}, {merge: true});
+      dispatch(addSchedulesReducer({ ...data, createdAt: new Date().toISOString() }));
     }
   };
   return addSchedule;

@@ -9,11 +9,6 @@ const UserIcon = ({ userName }: Props) => {
         <defs>
           <path id="circleTextPath" d="M75,75 m-60,0 a60,60 0 1,1 120,0 a60,60 0 1,1 -120,0" />
         </defs>
-        <text fontSize="12" fill="black" fontFamily="sans-serif">
-          <textPath href="#circleTextPath" startOffset="20%">
-            LOGO
-          </textPath>
-        </text>
         <circle cx="75" cy="75" r="40" fill="#f2f2f2" stroke="#000" />
         <text x="75" y="80" textAnchor="middle" fontSize="12" fill="black" fontWeight="bold">
           {userName}
