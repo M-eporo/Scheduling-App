@@ -32,6 +32,7 @@
   border-radius: 8px;
   background-color: #eee;
   box-shadow: 2px 2px 9px rgba(0,0,0,0.2);
+  z-index: 100;
 }
 .list {
   display: grid;

@@ -1,12 +1,13 @@
 import styles from "../styles/selectScheduleRegister.module.css";
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from "uuid";
-import Button from "./Button";
+import CustomButton from "./CustomButton";
 import { EventObjType } from "../types";
 import { useAddSchedules } from "../hooks/useAddSchedule";
 import { isSameDate } from "../utils/isSameDate";
 import { dateFormatter } from "../utils/dateFormatter";
 import SelectColor from "./SelectColor";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText } from "@mui/material";
 type Props = {
   setIsShow: Dispatch<SetStateAction<boolean>>;
   selectData: {
@@ -15,13 +16,18 @@ type Props = {
     startStr: string,
     end: Date,
     endStr: string,
-  }
+  };
+  setSuccessMsg: Dispatch<SetStateAction<boolean>>;
+  setFailMsg: Dispatch<SetStateAction<boolean>>;
 };
 
-const SelectScheduleRegister = ({ setIsShow, selectData }: Props) => {
+const SelectScheduleRegister = ({ setIsShow, selectData, setSuccessMsg, setFailMsg }: Props) => {
   const addSchedule = useAddSchedules();
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+
+  const [open, setOpen] = useState(false);
+  
 
   const [form, setForm] = useState<EventObjType>({
     id: "",
@@ -71,24 +77,29 @@ const SelectScheduleRegister = ({ setIsShow, selectData }: Props) => {
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!form.title) {
-      alert("タイトルが入力されていません。");
-      return;
+    if (form.title !== "") {
+      try {
+        addSchedule({
+          id: uuidv4(),
+          title: form.title,
+          allDay: form.allDay,
+          createdAt: form.createdAt,
+          date: form.date,
+          dateStr: form.dateStr,
+          start: form.start,
+          end: form.end,
+          startStr: form.startStr,
+          endStr: form.endStr,
+          extendedProps: form.extendedProps
+        });
+        setIsShow(false);
+        setSuccessMsg(true);
+      } catch (err) {
+        setFailMsg(true);
+      }
+    } else {
+      setOpen(true);
     }
-    addSchedule({
-      id: uuidv4(),
-      title: form.title,
-      allDay: form.allDay,
-      createdAt: form.createdAt,
-      date: form.date,
-      dateStr: form.dateStr,
-      start: form.start,
-      end: form.end,
-      startStr: form.startStr,
-      endStr: form.endStr,
-      extendedProps: form.extendedProps
-    });
-    setIsShow(false);
   };
 
   return (
@@ -133,13 +144,13 @@ const SelectScheduleRegister = ({ setIsShow, selectData }: Props) => {
           <SelectColor form={form} setForm={setForm} />
         </label>
         <div className={styles.btnContainer}>
-          <Button
+          <CustomButton
             type="submit"
             disabled={false}
             value="登録"
             styleName="registerBtn"
           />
-          <Button
+          <CustomButton
             type="button"
             disabled={false}
             value="キャンセル"
@@ -148,6 +159,17 @@ const SelectScheduleRegister = ({ setIsShow, selectData }: Props) => {
           />
         </div>
       </form>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogContent>
+          <DialogContentText>
+            タイトルが入力されていません。
+            タイトルを入力してください。
+          </DialogContentText>
+          <DialogActions>
+            <Button onClick={() => setOpen(false)} variant="outlined" color="warning">閉じる</Button>
+          </DialogActions>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

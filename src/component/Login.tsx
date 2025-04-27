@@ -5,7 +5,7 @@ import { useState } from "react";
 import GoogleIcon from '@mui/icons-material/Google';
 import Input from "./Input";
 import Container from "./Container";
-import Button from "./Button";
+import CustomButton from "./CustomButton";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import NewAccountForm from "./NewAccountForm";
 
@@ -98,7 +98,7 @@ const Login = () => {
               value={form}
               onChange={handleChange}
             />
-            <Button type="submit" disabled={!form.email || !form.password} value="ログイン" styleName="loginBtn"></Button>
+            <CustomButton type="submit" disabled={!form.email || !form.password} value="ログイン" styleName="loginBtn"></CustomButton>
           </form>
         </div>
         <div className={styles.container}>

@@ -41,6 +41,7 @@ const MyFullCalendar = () => {
   const [successMsg, setSuccessMsg] = useState(false);
   const [failMsg, setFailMsg] = useState(false);
   const [deleteScheduleMsg, setDeleteScheduleMsg] = useState(false);
+  const [snackbarMsg, setSnackbarMsg] = useState("");
 
   //handleClick用 ScheduleRegisterの表示
   const [isSchedulesRegisterShow, setIsSchedulesRegisterShow] = useState(false);
@@ -236,7 +237,7 @@ console.log(userSchedules);
             setDeleteScheduleMsg={setDeleteScheduleMsg}
             setFailMsg={setFailMsg}
             data={schedulesModalData}
-            />
+            /> 
           }
           {isSchedulesRegisterShow && 
             <ScheduleRegister
@@ -250,6 +251,8 @@ console.log(userSchedules);
             <SelectScheduleRegister
             setIsShow={setIsSelectSchedulesRegisterShow}
             selectData={selectData} 
+            setSuccessMsg={setSuccessMsg}
+            setFailMsg={setFailMsg}
             />
           }
           {successMsg &&

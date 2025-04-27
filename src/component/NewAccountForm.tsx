@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styles from "../styles/newAccountForm.module.css";
 import Input from "./Input";
-import Button from "./Button";
+import CustomButton from "./CustomButton";
 import { createUserWithEmailAndPassword, sendEmailVerification, UserCredential } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
@@ -96,13 +96,13 @@ const NewAccountForm = ({ setIsShow }: Props) => {
               onChange={handleChange}
             />
             </div>
-            <Button
+            <CustomButton
               styleName="loginBtn"
               type="submit"
               disabled={!form.name || !form.displayName || !form.email || !form.password}
               value="登録"
             />
-            <Button
+            <CustomButton
               styleName="cancelBtn"
               type="button"
               disabled={false}

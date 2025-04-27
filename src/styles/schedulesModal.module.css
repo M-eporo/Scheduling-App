@@ -16,7 +16,9 @@
   composes: input from "./input.module.css";
 }
 .btnContainer {
-  composes: flex-center from "./utils.module.css";
+  composes: flex-row from "./utils.module.css";
+  margin-top: 2em;
+  justify-content: space-evenly;
 }
 .textarea {
   width: 100%;

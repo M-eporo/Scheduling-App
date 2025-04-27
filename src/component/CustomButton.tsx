@@ -1,4 +1,4 @@
-import styles from "../styles/button.module.css";
+import styles from "../styles/customButton.module.css";
 type ButtonProps = {
   type: "submit" | "reset" | "button" | undefined;
   disabled: boolean;
@@ -7,7 +7,7 @@ type ButtonProps = {
   onClick?: (value: React.SetStateAction<boolean>) => void;
   signOut?: () => Promise<void>;
 };
-const Button = ({ type, disabled, value, styleName, onClick, signOut }: ButtonProps) => {
+const CustomButton = ({ type, disabled, value, styleName, onClick, signOut }: ButtonProps) => {
   return (
     <button
       className={styles[styleName]}
@@ -27,4 +27,4 @@ const Button = ({ type, disabled, value, styleName, onClick, signOut }: ButtonPr
   );
 };
  
-export default Button;
+export default CustomButton;
