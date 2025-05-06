@@ -15,11 +15,11 @@ type Props = {
     date: Date;
     dateStr: string;
   }
-  setSuccessMsg: Dispatch<SetStateAction<boolean>>;
-  setFailMsg: Dispatch<SetStateAction<boolean>>;
+  setShowSnackbar: Dispatch<SetStateAction<boolean>>;
+  setSnackbarMsg: Dispatch<SetStateAction<string>>;
 };
 
-const ScheduleRegister = ({ setIsShow, clickData, setSuccessMsg, setFailMsg }: Props) => {
+const ScheduleRegister = ({ setIsShow, clickData, setShowSnackbar, setSnackbarMsg }: Props) => {
   const addSchedule = useAddSchedules();
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -87,9 +87,12 @@ const ScheduleRegister = ({ setIsShow, clickData, setSuccessMsg, setFailMsg }: P
         extendedProps: form.extendedProps
         });
         setIsShow(false);
-        setSuccessMsg(true);
-      } catch (err) {
-        setFailMsg(true);
+        setSnackbarMsg("スケジュールを登録しました。");
+        setShowSnackbar(true);
+      } catch (err: any) {
+        setIsShow(false);
+        setSnackbarMsg(`${err.code}: スケジュールの登録に失敗しました。もう一度やり直してください。`);
+        setShowSnackbar(true);
       }
     } else {
       setOpen(true);
@@ -142,14 +145,14 @@ const ScheduleRegister = ({ setIsShow, clickData, setSuccessMsg, setFailMsg }: P
             type="submit"
             disabled={false}
             value="登録"
-            styleName="registerBtn"
-          />
+            styleName="scheduleRegisterBtn"
+          /> 
           <CustomButton
             type="button"
             disabled={false}
             value="キャンセル"
             onClick={setIsShow}
-            styleName="cancelBtn"
+            styleName="cancelRegisterBtn"
           />
         </div>
       </form>

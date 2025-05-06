@@ -1,7 +1,12 @@
 .logoContainer {
   display: grid;
   place-items: center;
+  padding: 1em 0;
 }
 .MuiDrawer-anchorLeft {
   min-width: 16vw
 }
+.userPhoto {
+  border-radius: 50%;
+}
+

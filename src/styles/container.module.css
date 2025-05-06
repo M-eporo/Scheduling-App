@@ -1,8 +1,9 @@
 .default {
   display: grid;
   place-items: center;
-  width: 92%;
+  min-width: 92%;
   max-width: 1180px;
-  height: 100dvh;
+  padding: 0 4%;
+  height: 95dvh;
   margin: 0 auto;
 }

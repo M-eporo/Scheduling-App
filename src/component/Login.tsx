@@ -7,14 +7,19 @@ import Input from "./Input";
 import Container from "./Container";
 import CustomButton from "./CustomButton";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import NewAccountForm from "./NewAccountForm";
+import RegisterAccount from "./RegisterAccount";
+import { Snackbar } from "@mui/material";
 
 const Login = () => {
   const [form, setForm] = useState({
     email: "",
     password: ""
   });
+  //新規登録用フォーム表示用モーダル
   const [isShow, setIsShow] = useState(false);
+  //snackbar表示用とメッセージ設定
+  const [snackbarMsg, setSnackbarMsg] = useState("");
+  const [showSnackbar, setShowSnackbar] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({...form, [e.target.name]: e.target.value});
@@ -47,7 +52,6 @@ const Login = () => {
       alert("ログインに失敗しました。");
     }
   };
-
   //Google Login
   const googleLogin = async () => {
     try {
@@ -60,7 +64,6 @@ const Login = () => {
       alert("ログインに失敗しました。");
     }
   };
-
   //パスワード再設定 ==============================要チェック
   const passwordChange = async () => {
     if (!form.email) {
@@ -79,7 +82,7 @@ const Login = () => {
   return (
     <Container>
       <div className={styles.wrapper}>
-        {isShow && <NewAccountForm setIsShow={setIsShow} />}
+        {isShow && <RegisterAccount setIsShow={setIsShow} setShowSnackbar={setShowSnackbar} setSnackbarMsg={setSnackbarMsg} />}
         <div className={styles.container}>
           <form onSubmit={login}>
             <Input
@@ -103,14 +106,24 @@ const Login = () => {
         </div>
         <div className={styles.container}>
           <div className={styles.innerContainer}>
-            <p className={styles.button} onClick={passwordChange}>パスワードをお忘れですか？</p>
-            <p className={styles.button} onClick={() => setIsShow(prevState => !prevState)}>新規アカウント登録</p>
+            <p role="button" className={styles.button} onClick={passwordChange}>パスワードをお忘れですか？</p>
+            <p role="button" className={styles.button} onClick={() => setIsShow(prevState => !prevState)}>新規アカウント登録</p>
             <div className={styles.flexContainer}>
               <GoogleIcon />
-              <p className={styles.button} onClick={googleLogin}>Googleでログイン</p>
+              <p role="button" className={styles.button} onClick={googleLogin}>Googleでログイン</p>
             </div>
           </div>
         </div>
+        
+        {showSnackbar &&
+          <Snackbar
+            open={showSnackbar}
+            onClose={() => setShowSnackbar(false)}
+            autoHideDuration={4000}
+            message={snackbarMsg}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          />
+        }
       </div>
     </Container>
   )

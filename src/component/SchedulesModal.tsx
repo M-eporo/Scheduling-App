@@ -11,15 +11,18 @@ import { Dialog, DialogActions, DialogTitle, Button, Box } from "@mui/material";
 
 type Props = {
   setIsSchedulesModalShow: Dispatch<SetStateAction<boolean>>;
-  setSuccessMsg: Dispatch<SetStateAction<boolean>>;
-  setDeleteScheduleMsg: Dispatch<SetStateAction<boolean>>;
-  setFailMsg: Dispatch<SetStateAction<boolean>>;
   data: EventType;
+  setShowSnackbar: Dispatch<SetStateAction<boolean>>;
+  setSnackbarMsg: Dispatch<SetStateAction<string>>;
+  // setSuccessMsg: Dispatch<SetStateAction<boolean>>;
+  // setDeleteScheduleMsg: Dispatch<SetStateAction<boolean>>;
+  // setFailMsg: Dispatch<SetStateAction<boolean>>;
+  
 };
 
 const SchedulesModal = (({
-  setIsSchedulesModalShow,
-  setSuccessMsg, setDeleteScheduleMsg, setFailMsg, data
+  setIsSchedulesModalShow, data,
+  setShowSnackbar, setSnackbarMsg
 }: Props) => {
   const addSchedules = useAddSchedules();
   const [form, setForm] = useState<EventObjType>({
@@ -79,9 +82,11 @@ const SchedulesModal = (({
           endStr: data[0].endStr,
           extendedProps: form.extendedProps
         });
-        setSuccessMsg(true);
+        setSnackbarMsg("スケジュールを更新しました。")
+        setShowSnackbar(true);
       } catch (err) {
-        setFailMsg(true);
+        setSnackbarMsg("処理に失敗しました。もう一度最初から実行して下さい。")
+        setShowSnackbar(true);
       }
     } else {
       auth.signOut();
@@ -95,7 +100,8 @@ const SchedulesModal = (({
       if (!data[0].id) return;
       const docRef = doc(db, "user", auth.currentUser.uid, "schedules", data[0].id);
       await deleteDoc(docRef);
-      setDeleteScheduleMsg(true);
+      setSnackbarMsg("スケジュールを削除しました。")
+      setShowSnackbar(true);
     } else {
       auth.signOut();
     }
@@ -104,6 +110,7 @@ const SchedulesModal = (({
 
   return (
     <>
+      
       <div className={styles.container}>
         <h4 className={styles.title}>
           {
@@ -155,7 +162,7 @@ const SchedulesModal = (({
               size="large"
               color="success"
               sx={{
-                width: "120px"
+                minWidth: "100px"
               }}
             >更新</Button>
             <Button
@@ -168,7 +175,7 @@ const SchedulesModal = (({
               }
               variant="outlined"
               sx={{
-                width: "120px",
+                minWidth: "100px",
                 borderColor: "#1B5E20",
                 color: "#1B5E20"
               }}
@@ -178,7 +185,7 @@ const SchedulesModal = (({
               variant="outlined"
               color="warning"
               sx={{
-                width: "120px"
+                minWidth: "100px"
               }}
             >キャンセル</Button>
           </div>
@@ -218,7 +225,7 @@ const SchedulesModal = (({
             </DialogActions>
           </Box>
         </Dialog>
-      </div>
+        </div>
     </>
   )
 });

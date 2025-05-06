@@ -1,15 +1,64 @@
 .container {
-  composes: container from "./schedulesModal.module.css";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  width: clamp(300px, 205.31px + 25vw, 500px);
+  border: 1px solid rgba(0,0,0,0.3);
+  box-shadow: 0 0 20px 10px rgba(0,0,0,0.1);
+  border-radius: 5px;
+  padding: 2em;
+  background-color: #fff;
+  font-size: var(--s-font);
+  z-index: 999;
 }
 .form {
   margin-top: 1em;
 }
 .input {
-  composes: input from "./input.module.css";
+  min-width: 0;
+  width: 100%;
+  margin-top: 1em;
+  outline: none;
+  border: 1px solid var(--main-color);
+  border-radius: 5px;
+  box-sizing: border-box;
+  padding: 1em;
+  letter-spacing: 0.1em;
+  &:focus {
+    border-width: 2px;
+    border-color: #6239ec;
+  }
 }
 .textarea {
-  composes: textarea from "./schedulesModal.module.css";
+  min-width: 0;
+  width: 100%;
+  min-height: 48px;
+  margin: 1em auto;
+  padding: 1em 0.8em;
+  box-sizing: border-box;
+  border: 1px solid var(--main-color);
+  border-radius: 5px;
+  outline: none;
+  color: var(--main-text-color);
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+  font-size: 16px;
+  &:focus {
+    border-width: 2px;
+    border-color: #6239ec;
+  }
 }
 .btnContainer {
-  composes: flex-center from "./utils.module.css";
+  display: flex;
+  flex-direction: row;
+  margin-top: 2em;
+  justify-content: space-evenly;
+}
+
+@media screen and (max-width: 600px){
+  .container {
+    padding: 1em;
+  }
 }

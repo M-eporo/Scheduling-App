@@ -1,4 +1,4 @@
-import styles from "../styles/selectScheduleRegister.module.css";
+import styles from "../styles/scheduleRegister.module.css";
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from "uuid";
 import CustomButton from "./CustomButton";
@@ -17,11 +17,11 @@ type Props = {
     end: Date,
     endStr: string,
   };
-  setSuccessMsg: Dispatch<SetStateAction<boolean>>;
-  setFailMsg: Dispatch<SetStateAction<boolean>>;
+  setShowSnackbar: Dispatch<SetStateAction<boolean>>;
+  setSnackbarMsg: Dispatch<SetStateAction<string>>;
 };
 
-const SelectScheduleRegister = ({ setIsShow, selectData, setSuccessMsg, setFailMsg }: Props) => {
+const SelectScheduleRegister = ({ setIsShow, selectData, setShowSnackbar, setSnackbarMsg }: Props) => {
   const addSchedule = useAddSchedules();
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -93,9 +93,12 @@ const SelectScheduleRegister = ({ setIsShow, selectData, setSuccessMsg, setFailM
           extendedProps: form.extendedProps
         });
         setIsShow(false);
-        setSuccessMsg(true);
-      } catch (err) {
-        setFailMsg(true);
+        setSnackbarMsg("スケジュールを登録しました。");
+        setShowSnackbar(true);
+      } catch (err: any) {
+        setIsShow(false);
+        setSnackbarMsg(`${err.code}: スケジュールの登録に失敗しました。もう一度やり直してください。`);
+        setShowSnackbar(true);
       }
     } else {
       setOpen(true);

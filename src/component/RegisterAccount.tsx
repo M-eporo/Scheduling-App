@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "../styles/newAccountForm.module.css";
+import styles from "../styles/registerAccount.module.css";
 import Input from "./Input";
 import CustomButton from "./CustomButton";
 import { createUserWithEmailAndPassword, sendEmailVerification, UserCredential } from "firebase/auth";
@@ -14,9 +14,11 @@ type FormType = {
 }
 type Props = {
   setIsShow: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowSnackbar: React.Dispatch<React.SetStateAction<boolean>>;
+  setSnackbarMsg: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const NewAccountForm = ({ setIsShow }: Props) => {
+const RegisterAccount = ({ setIsShow, setShowSnackbar, setSnackbarMsg }: Props) => {
   const [form, setForm] = useState<FormType>({
     name: "",
     displayName: "",
@@ -51,11 +53,14 @@ const NewAccountForm = ({ setIsShow }: Props) => {
       if (result.user) {
         await sendEmailVerification(result.user);
         saveUserToFireStore(result);
-        alert("メールアドレス認証用のメールを送信しました。");
+        setSnackbarMsg("メールアドレス認証用のメールを送信しました。受信ボックスを確認してください。");
+        setShowSnackbar(true);
       }
-    } catch (err) {
-      alert("アカウント作成に失敗しました。");
+    } catch (error) {
+      setSnackbarMsg(`アカウント作成に失敗しました。`);
+      setShowSnackbar(true);
     }
+    setIsShow(false);
   };
   return (
     <div className={styles.container}>
@@ -95,24 +100,26 @@ const NewAccountForm = ({ setIsShow }: Props) => {
               value={form}
               onChange={handleChange}
             />
+          </div>
+            <div className={styles.btnContainer}>
+              <CustomButton
+                styleName="registerBtn"
+                type="submit"
+                disabled={!form.name || !form.displayName || !form.email || !form.password}
+                value="登録"
+              />
+              <CustomButton
+                styleName="cancelBtn"
+                type="button"
+                disabled={false}
+                value="キャンセル"
+                onClick={() => setIsShow(prevState => !prevState)}
+              />
             </div>
-            <CustomButton
-              styleName="loginBtn"
-              type="submit"
-              disabled={!form.name || !form.displayName || !form.email || !form.password}
-              value="登録"
-            />
-            <CustomButton
-              styleName="cancelBtn"
-              type="button"
-              disabled={false}
-              value="キャンセル"
-              onClick={() => setIsShow(prevState => !prevState)}
-            />
           </form>
         </>
     </div>
   )
 }
 
-export default NewAccountForm;
+export default RegisterAccount;

@@ -1,8 +1,17 @@
 .flex {
   composes: flex-row from "./utils.module.css";
 }
-
 .calendarContainer {
   position: relative;
   padding: 0 1em;
+  width: calc(100vw - 224.587px);
+  margin-left: auto;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 899px) {
+  .calendarContainer {
+    width: 100vw;
+    margin-left: 0;
+  }
 }

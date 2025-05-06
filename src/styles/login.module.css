@@ -1,13 +1,19 @@
 .wrapper {
   /* height:  */
-  composes: grid-one-column-center from "./utils.module.css";
+  display: grid;
+  place-items: center;
   position: relative;
-}
+  margin-top: 50px;
+} 
 .container {
   display: flex;
   width: clamp(330px, 31vw + 13.31rem, 580px);
   justify-self: center;
+  margin-top: 2em;
   //padding: 4.5em 0;
+}
+form {
+  width: 100%;
 }
 .innerContainer {
   width: 100%;
@@ -19,8 +25,9 @@
   }
 }
 .flexContainer {
+  display: flex;
+  justify-content: center;
   column-gap: 0.5em; 
-  composes: flex-center from "./utils.module.css";
   align-items: center;
 }
 .button {

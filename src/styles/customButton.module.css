@@ -4,18 +4,16 @@ button {
   font-weight: bold;
   transition: all 0.6s;
   &:hover {
-    filter: drop-shadow(0 0 5px #777);
-    
+    filter: drop-shadow(0 0 3px #555);
   }
 }
- 
 .loginBtn {
   display: block;
-  width: 30%;
-  margin: 2em auto 0;
+  width: 150px;
+  margin: 4em auto 0;
   padding: 1em 0;
   border: none;
-  border-radius: 16px;
+  border-radius: 5px;
   background-color: var(--main-color);
   color: var(--white);
 }
@@ -27,12 +25,23 @@ button {
   margin: 1em auto 0;
 }
 .registerBtn {
-  composes: loginBtn;
+  display: block;
+  width: 150px;
+  padding: 1em 0;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--main-color);
+  color: var(--white);
+  margin-top: 2em;
   border: 1px solid var(--main-color);
   margin: 1em auto 0;
 }
 .cancelBtn {
-  composes: loginBtn;
+  display: block;
+  width: 150px;
+  padding: 1em 0;
+  border: none;
+  border-radius: 5px;
   border: 1px solid var(--main-color);
   background-color: #fff;
   color: var(--main-color);
@@ -43,4 +52,23 @@ button {
 }
 .deleteBtn {
   composes: registerBtn;
+}
+.scheduleRegisterBtn {
+  
+  min-width: 130px;
+  border-radius: 5px;
+  border: none;
+  background-color: var(--main-color);
+  color: var(--white);
+  font-size: 16px;
+}
+.cancelRegisterBtn {
+  
+  min-width: 130px;
+  padding: 1em 1em;
+  border-radius: 5px;
+  border: 1px solid var(--main-color);
+  background-color: #fff;
+  color: var(--main-color);
+  font-size: 16px;
 }

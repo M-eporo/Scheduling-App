@@ -26,7 +26,8 @@ import type {
 } from "../types";
 import SelectScheduleRegister from "./SelectScheduleRegister";
 import MenuDrawer from "./MenuDrawer";
-import { Snackbar } from "@mui/material";
+import { Snackbar, useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 const MyFullCalendar = () => {
   const calendarRef = useRef<CalendarApi | null>(null);
@@ -37,11 +38,13 @@ const MyFullCalendar = () => {
   //Modalの表示
   const [isSchedulesModalShow, setIsSchedulesModalShow] = useState(false);
   const [schedulesModalData, setSchedulesModalData] = useState<EventType>([]);
-  //Snackbarの表示
-  const [successMsg, setSuccessMsg] = useState(false);
-  const [failMsg, setFailMsg] = useState(false);
-  const [deleteScheduleMsg, setDeleteScheduleMsg] = useState(false);
+  //Snackbarの表示とメッセージ
+  const [showSnackbar, setShowSnackbar] = useState(false);
   const [snackbarMsg, setSnackbarMsg] = useState("");
+
+  //レスポンシブデザイン
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   //handleClick用 ScheduleRegisterの表示
   const [isSchedulesRegisterShow, setIsSchedulesRegisterShow] = useState(false);
@@ -96,8 +99,8 @@ const MyFullCalendar = () => {
       : event.createdAt
   }));
   dispatch(setSchedulesReducer(serializableEvents));
-}, [events, dispatch]);
-console.log(userSchedules);
+  }, [events, dispatch]);
+  
   const getDayClassName = (date: Date) => {
     const day: number = date.getDay();
     const formattedDate = date.toLocaleDateString("ja-JP", {
@@ -166,12 +169,13 @@ console.log(userSchedules);
       calendarRef.current?.changeView(view);
     }
   };
-  
+   
   return (
     <>
-      <MenuDrawer handleChangeView={handleChangeView} />
+      <MenuDrawer handleChangeView={handleChangeView} events={events} />
       {user?.emailVerified || emailUser?.emailVerified ? (
         <div className={styles.calendarContainer}>
+          
           <FullCalendar
             key={events.map(e => e.id && e.extendedProps && e.id + e.extendedProps?.backgroundColor).join("-")}
             ref={(el) => {
@@ -180,10 +184,15 @@ console.log(userSchedules);
               }
             }}
             locale="jaLocale"
-            headerToolbar={{
-              left: "prevYear, prev, today, next, nextYear",
+            
+            headerToolbar={isMobile ?
+            {
+              left: "prevYear,prev,today,next,nextYear",
+              right: "title",
+            } : {
+              left: "prevYear,prev,today,next,nextYear",
               center: "title",
-              right: "timeGridDay, timeGridWeek, dayGridMonth, multiMonthYear",
+              right: "timeGridDay,timeGridWeek,dayGridMonth,multiMonthYear",
             }}
             
             height="95vh"
@@ -224,63 +233,46 @@ console.log(userSchedules);
               fontSize: "12px",
               fontWeight: "semi-bold",
               backgroundColor: "#3BC22F",
-              color: "#fff",
-              filter: "brightness(1.2)",
+              color: "#333",
               zIndex: 999,
-              boxShadow: "0 0 5px 2px rgba(0,0,0,0.2)"
+              boxShadow: "0 0 25px 5px rgba(0,0,0,0.2)",
+              textShadow: "0.5px 0.5px rgb(255,255,255)",
             }}
           />
           {isSchedulesModalShow &&
             <SchedulesModal
-            setIsSchedulesModalShow={setIsSchedulesModalShow}
-            setSuccessMsg={setSuccessMsg}
-            setDeleteScheduleMsg={setDeleteScheduleMsg}
-            setFailMsg={setFailMsg}
-            data={schedulesModalData}
-            /> 
+              setIsSchedulesModalShow={setIsSchedulesModalShow}
+              data={schedulesModalData}
+              setShowSnackbar={setShowSnackbar}
+              setSnackbarMsg={setSnackbarMsg}
+              />
           }
           {isSchedulesRegisterShow && 
             <ScheduleRegister
               setIsShow={setIsSchedulesRegisterShow}
               clickData={clickData}
-              setSuccessMsg={setSuccessMsg}
-              setFailMsg={setFailMsg}
+              setShowSnackbar={setShowSnackbar}
+              setSnackbarMsg={setSnackbarMsg}
             />
           }
           {isSelectSchedulesRegisterShow &&
             <SelectScheduleRegister
             setIsShow={setIsSelectSchedulesRegisterShow}
             selectData={selectData} 
-            setSuccessMsg={setSuccessMsg}
-            setFailMsg={setFailMsg}
+            setShowSnackbar={setShowSnackbar}
+            setSnackbarMsg={setSnackbarMsg}
             />
           }
-          {successMsg &&
+          {showSnackbar &&
             <Snackbar
-            open={successMsg}
-            onClose={() => setSuccessMsg(false)}
+            open={showSnackbar}
+            onClose={() => setShowSnackbar(false)}
             autoHideDuration={4000}
-            message="スケジュールを更新しました。"
+            message={snackbarMsg}
             anchorOrigin={{ vertical: "bottom", horizontal: "right"}}
-          />}
-          {deleteScheduleMsg &&
-            <Snackbar
-            open={deleteScheduleMsg}
-            onClose={() => setDeleteScheduleMsg(false)}
-            autoHideDuration={4000}
-            message="スケジュールを削除しました。"
-            anchorOrigin={{ vertical: "bottom", horizontal: "right"}}
-          />}
-          {failMsg &&
-            <Snackbar
-            open={failMsg}
-            onClose={() => setFailMsg(false)}
-            autoHideDuration={4000}
-            message="処理に失敗しました。もう一度最初から実行して下さい。"
-            anchorOrigin={{ vertical: "bottom", horizontal: "right"}}
-          />}
+            />}
         </div>
-
+        
       ) : (
         <EmailVerifying />
       )}

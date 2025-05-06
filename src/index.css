@@ -1,0 +1,41 @@
+.fc .fc-toolbar-title {
+  font-size: clamp(12px, 1.2vw + 7.2px ,22px);
+}
+
+/* ヘッダーツールバーの背景色 */
+.fc .fc-button-primary {
+  background-color: var(--main-color);
+  border: none;
+}
+.fc .fc-button-primary:hover {
+  background-color: var(--main-color);
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active {
+  background-color: var(--main-color);
+}
+.fc .fc-button-primary:disabled {
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+}
+
+/* カレンダーの文字フォント */
+.fc .fc-col-header-cell-cushion {
+  font-size: clamp(12px, 0.5vw + 10.1px, 16px);
+}
+.fc .fc-daygrid-day-number {
+  font-size: clamp(12px, 0.5vw + 10.1px, 16px);
+}
+.fc .fc-event-title-container {
+  font-size: clamp(10px, 0.5vw + 8.1px, 14px);
+}
+
+/* リストビューの設定 */
+.MuiBox-root .fc.fc-media-screen.fc-direction-ltr.fc-theme-standard {
+  font-size: 10px;
+}
+.MuiBox-root .fc-header-toolbar {
+  
+}
+.fc-list-day-side-text {
+  font-size: 12px;
+}

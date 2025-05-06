@@ -22,7 +22,6 @@ const UserInfoModal = ({ user }: Props) => {
   const [form, setForm] = useState({
     displayName: user?.displayName,
   });
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({
       ...form,
@@ -71,7 +70,6 @@ const UserInfoModal = ({ user }: Props) => {
             helperText="Read Only"
             margin="normal"
           />
-          
             <TextField
               id="name"
               name="name"
@@ -84,15 +82,17 @@ const UserInfoModal = ({ user }: Props) => {
               }}
             helperText="Read Only"
             margin="normal"
-            />
-          <TextField
-            id="displayName"
-            name="displayName"
-            label="表示名"
-            defaultValue={user?.displayName}
-            margin="normal"
-            onChange={handleChange}
           />
+          
+            <TextField
+              id="displayName"
+              name="displayName"
+              label="表示名"
+              defaultValue={user?.displayName}
+              margin="normal"
+              onChange={handleChange}
+            />
+          
           <TextField
             id="email"
             name="email"

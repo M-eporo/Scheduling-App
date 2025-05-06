@@ -1,7 +1,7 @@
 .footer {
   display: grid;
   place-items: center;
-  height: calc(5vh);
+  height: calc(100vh - 95vh);
   padding: 0.5em 0;
   box-sizing: border-box;
 }
