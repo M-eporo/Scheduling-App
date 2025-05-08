@@ -1,5 +1,5 @@
 import styles from "../styles/selectColor.module.css";
-import { useRef } from "react";
+import { useState } from "react";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CircleIcon from '@mui/icons-material/Circle';
 import { colorOptions } from "../utils/optionColors";
@@ -11,10 +11,11 @@ type Props = {
 }
 
 const SelectColor = ({ form, setForm }: Props) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const colorsOpt = colorOptions;
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const itemRef = useRef<HTMLDivElement>(null);
-  const circleRef = useRef<SVGSVGElement>(null);
+  const toggleDropdown = () => {
+    setIsDropdownOpen((prev) => !prev);
+  };
   
   const handleSelect = (option: ColorOptionType) => {
     setForm({
@@ -25,46 +26,27 @@ const SelectColor = ({ form, setForm }: Props) => {
         borderColor: option.borderColor
       }
     });
-    
-    if (circleRef.current && dropdownRef.current) {
-      circleRef.current.style.color = option.backgroundColor;
-      if (dropdownRef.current.style.display === "none") {
-        dropdownRef.current.style.display = "grid";
-      } else {
-        dropdownRef.current.style.display = "none";
-      }
-    }
-  };
-
-  const listShow = () => {
-    if (dropdownRef.current) {
-      if (dropdownRef.current.style.display === "none") {
-        dropdownRef.current.style.display = "grid";
-      } else {
-        dropdownRef.current.style.display = "none";
-      }
-    }
+    setIsDropdownOpen(false);
   };
  
   return (
     <div className={styles.container}>
       <div
         className={styles.selectedOption}
-        onClick={() => listShow()}
+        onClick={toggleDropdown}
+        role="button"
       >
         <div className={styles.flex}>
           <ArrowDropDownIcon className={styles.arrow} />
-          <CircleIcon ref={circleRef} style={{color: form.extendedProps.backgroundColor}} />
+          <CircleIcon style={{color: form.extendedProps.backgroundColor}} />
         </div>
       </div>
-      
-        <div ref={dropdownRef} className={styles.dropdown}>
+      {isDropdownOpen && (
+        <div className={styles.dropdown}>
           {
             colorsOpt.map((option) => (
               <div
-                ref={itemRef}
                 key={option.backgroundColor}
-                
                 className={styles.list}
                 onClick={() => handleSelect(option)}
               >
@@ -73,7 +55,7 @@ const SelectColor = ({ form, setForm }: Props) => {
               </div>
           ))}
         </div>
-       
+      )}
     </div>
   );
 };
