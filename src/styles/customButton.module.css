@@ -20,8 +20,6 @@ button {
 .alterBtn {
   composes: loginBtn;
   border: 1px solid var(--main-color);
-  /* background-color: #fff;
-  color: var(--main-color); */
   margin: 1em auto 0;
 }
 .registerBtn {
@@ -52,23 +50,4 @@ button {
 }
 .deleteBtn {
   composes: registerBtn;
-}
-.scheduleRegisterBtn {
-  
-  min-width: 130px;
-  border-radius: 5px;
-  border: none;
-  background-color: var(--main-color);
-  color: var(--white);
-  font-size: 16px;
-}
-.cancelRegisterBtn {
-  
-  min-width: 130px;
-  padding: 1em 1em;
-  border-radius: 5px;
-  border: 1px solid var(--main-color);
-  background-color: #fff;
-  color: var(--main-color);
-  font-size: 16px;
 }

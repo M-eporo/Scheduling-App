@@ -42,7 +42,7 @@ const SelectColor = ({ form, setForm }: Props) => {
         </div>
       </div>
       {isDropdownOpen && (
-        <div className={styles.dropdown}>
+        <div className={styles.dropdown} data-role="color-dropdown">
           {
             colorsOpt.map((option) => (
               <div

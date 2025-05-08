@@ -25,10 +25,7 @@ const SelectScheduleRegister = ({ setIsShow, selectData, setShowSnackbar, setSna
   const addSchedule = useAddSchedules();
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
-
   const [open, setOpen] = useState(false);
-  
-
   const [form, setForm] = useState<EventObjType>({
     id: "",
     title: "",
@@ -47,7 +44,15 @@ const SelectScheduleRegister = ({ setIsShow, selectData, setShowSnackbar, setSna
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      const target = e.target as HTMLElement;
+      if (
+        //モーダル表示時
+        modalRef.current &&
+        //モーダルがターゲットを含んでいない
+        !modalRef.current.contains(target) &&
+        //最も近い祖先要素がドロップダウンでなければ
+        !target.closest('[data-role="color-dropdown"]')
+      ) {
         setIsShow(false);
       }
     };

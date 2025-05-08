@@ -23,9 +23,7 @@ const ScheduleRegister = ({ setIsShow, clickData, setShowSnackbar, setSnackbarMs
   const addSchedule = useAddSchedules();
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
-
   const [open, setOpen] = useState(false);
-
   const [form, setForm] = useState<EventObjType>({
     id: "",
     title: "",
@@ -42,10 +40,15 @@ const ScheduleRegister = ({ setIsShow, clickData, setShowSnackbar, setSnackbarMs
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      const target = e.target as HTMLElement;
+      if (modalRef.current &&
+          !modalRef.current.contains(target) &&
+          !target.closest('[data-role="color-dropdown"]')
+        ) {
         setIsShow(false);
       }
     };
+
     document.addEventListener("click", handleClickOutside);
     document.addEventListener("touchstart", handleClickOutside);
     return () => {
@@ -145,14 +148,14 @@ const ScheduleRegister = ({ setIsShow, clickData, setShowSnackbar, setSnackbarMs
             type="submit"
             disabled={false}
             value="登録"
-            styleName="scheduleRegisterBtn"
+            styleName="registerBtn"
           /> 
           <CustomButton
             type="button"
             disabled={false}
             value="キャンセル"
             onClick={setIsShow}
-            styleName="cancelRegisterBtn"
+            styleName="cancelBtn"
           />
         </div>
       </form>
