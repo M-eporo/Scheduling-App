@@ -28,6 +28,9 @@ const ListView = ({events}: Props) => {
           listMonth: "月"
         }}
         events={events}
+        eventDidMount={(info) => {
+          info.el.style.backgroundColor = info.event.extendedProps.backgroundColor;
+        }}
       />
     </div>
   );
